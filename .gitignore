@@ -1,0 +1,16 @@
+# VS / .NET
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# NuGet
+packages/
+!**/packages.config
+
+# Logs / Temp
+**/App_Data/Temp/*
+**/App_Data/Logs/*
