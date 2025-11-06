@@ -6,18 +6,16 @@ using System.Threading.Tasks;
 
 namespace modelo
 {
-    public class Cliente
+    public class Persona
     {
-        public int Id { get; set; }  
-        public string Documento { get; set; }
+        public int Id { get; set; }   // id_persona
         public string Nombre { get; set; }
         public string Apellido { get; set; }
+        public string DNI { get; set; }
+        public DateTime? FechaNacimiento { get; set; }
+        public string Telefono { get; set; }
         public string Email { get; set; }
         public string Direccion { get; set; }
-        public string Ciudad { get; set; }
-        public int CP { get; set; }
-
-        // relacion con vouchers (un cliente puede tener muchos vouchers)
-
+        public bool Activo { get; set; }
     }
 }
