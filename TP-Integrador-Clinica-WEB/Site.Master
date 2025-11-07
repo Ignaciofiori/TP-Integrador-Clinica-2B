@@ -39,7 +39,7 @@
 
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
             <div class="container">
-                <a class="navbar-brand" runat="server" href="~/">Application name</a>
+                <a class="navbar-brand" runat="server" href="~/">Nombre APP Turnos</a>
                 <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -57,8 +57,13 @@
             <asp:ContentPlaceHolder ID="MainContent" runat="server">
             </asp:ContentPlaceHolder>
             <hr />
-            <footer>
-                <p>&copy; <%: DateTime.Now.Year %> - My ASP.NET Application</p>
+            <footer class="text-center mt-5 pt-4 pb-4 bg-light">
+                <p class="mb-0">
+                    &copy; <%: DateTime.Now.Year %> - NOMBRE Clínica Online<br>
+                    ¿Necesitás ayuda con tu cuenta o con la reserva de turnos?<br>
+                    Contactanos en info@NOMBRECLINICA.com. Estamos para ayudarte.
+                 <%--   Contactanos en <a href="mailto:info@NOMBRECLINICA.com">info@NOMBRECLINICA.com</a>. Estamos para ayudarte.--%>
+                </p>
             </footer>
         </div>
     </form>
