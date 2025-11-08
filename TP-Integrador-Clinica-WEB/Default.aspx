@@ -42,7 +42,15 @@
                 </select>
               </div>
 
-
+            
+<asp:GridView ID="gvEspecialidades" runat="server" CssClass="table table-striped table-bordered"
+    AutoGenerateColumns="false">
+    <Columns>
+        <asp:BoundField DataField="Id" HeaderText="ID" />
+        <asp:BoundField DataField="Nombre" HeaderText="Nombre" />
+        <asp:BoundField DataField="Descripcion" HeaderText="Descripción" />
+    </Columns>
+</asp:GridView>
         </div>
     </main>
 
