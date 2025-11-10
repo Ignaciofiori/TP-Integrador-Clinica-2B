@@ -14,5 +14,7 @@ namespace modelo
         public string DiaSemana { get; set; }
         public TimeSpan HoraInicio { get; set; }
         public TimeSpan HoraFin { get; set; }
+
+        public bool Activo { get; set; }
     }
 }

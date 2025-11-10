@@ -10,10 +10,10 @@ namespace modelo
     {
         public string Matricula { get; set; }
 
-        // Relación: un profesional puede tener varias especialidades
+        // un profesional puede tener varias especialidades
         public List<Especialidad> Especialidades { get; set; }
 
-        // Relación: un profesional puede trabajar con varias obras sociales
+     // un profesional puede trabajar con varias obras sociales
         public List<ObraSocial> ObrasSociales { get; set; }
     }
 }
