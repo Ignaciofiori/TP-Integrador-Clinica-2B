@@ -19,9 +19,9 @@ namespace negocio
 
         public AccesoDatos()
         {
-            connection = new SqlConnection("Server=localhost,1433;Database=consultorio_db;User Id=sa;Password=BaseDeDatos#2;TrustServerCertificate=True;Integrated Security=False;");
+          //  connection = new SqlConnection("Server=localhost,1433;Database=consultorio_db;User Id=sa;Password=BaseDeDatos#2;TrustServerCertificate=True;Integrated Security=False;");
             //connection = new SqlConnection("Server=localhost;Database=PROMOS_DB;Integrated Security=True;");
-            //connection = new SqlConnection("Server=DANA\\SQLEXPRESS;Database=PROMOS_DB;Trusted_Connection=True;TrustServerCertificate=True;");
+            connection = new SqlConnection("Server=DANA\\SQLEXPRESS;Database=consultorio_db;Trusted_Connection=True;TrustServerCertificate=True;");
             command = new SqlCommand();
         }
 
