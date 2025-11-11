@@ -5,52 +5,49 @@
     <main>
         <section class="row" aria-labelledby="tituloApp">
             <h1 id="tituloApp">Tu salud, más cerca: agendá tus turnos online.</h1>
-<%--            <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS, and JavaScript.</p>
-            <p><a href="http://www.asp.net" class="btn btn-primary btn-md">Learn more &raquo;</a></p>--%>
         </section>
 
         <div class="row">
+
+              <%--desarrollo--%>
+
+
               <div class="col-md-4">
-                <label for="buscarNombre" class="form-label">Por nombre</label>
-                <select id="buscarNombre" name="nombre" class="form-select">
-                  <option selected disabled>Seleccione un nombre</option>
-                  <option value="1">Dr. Perez</option>
-                  <option value="2">Dra. Gomez</option>
-                  <option value="3">Dr. Ramirez</option>
-                </select>
+                    <label for="ddlProfesional" class="form-label">Por profesional</label>
+                    <asp:DropDownList ID="ddlProfesional" runat="server" CssClass="form-select">
+                       <%-- <asp:ListItem Text="Seleccione un/a profesional" Value="" />--%>
+                    </asp:DropDownList>
               </div>
-
-
+              
               <div class="col-md-4">
-                <label for="buscarEspecialidad" class="form-label">Especialidad</label>
-                <select id="buscarEspecialidad" name="especialidad" class="form-select">
-                  <option selected disabled>Seleccione una especialidad</option>
-                  <option value="1">Cardiología</option>
-                  <option value="2">Pediatría</option>
-                  <option value="3">Dermatología</option>
-                </select>
+                <label for="ddlEspecialidad" class="form-label">Especialidad</label>
+                <asp:DropDownList ID="ddlEspecialidad" runat="server" CssClass="form-select">
+                    <%--<asp:ListItem Text="Seleccione una especialidad" Value="" />--%>
+                </asp:DropDownList>
               </div>
            
 
               <div class="col-md-4">
-                <label for="buscarCobertura" class="form-label">Cobertura médica</label>
-                <select id="buscarCobertura" name="cobertura" class="form-select">
-                  <option selected disabled>Seleccione una cobertura</option>
-                  <option value="1">OSDE</option>
-                  <option value="2">Swiss Medical</option>
-                  <option value="3">Galeno</option>
-                </select>
+                <label for="ddlCobertura" class="form-label">Cobertura médica</label>
+                <asp:DropDownList ID="ddlCobertura" runat="server" CssClass="form-select">
+                   <%-- <asp:ListItem Text="Seleccione una cobertura" Value="" />--%>
+                </asp:DropDownList>
               </div>
 
-            
-<asp:GridView ID="gvEspecialidades" runat="server" CssClass="table table-striped table-bordered"
-    AutoGenerateColumns="false">
-    <Columns>
-        <asp:BoundField DataField="Id" HeaderText="ID" />
-        <asp:BoundField DataField="Nombre" HeaderText="Nombre" />
-        <asp:BoundField DataField="Descripcion" HeaderText="Descripción" />
-    </Columns>
-</asp:GridView>
+           <%-- aca se ve el resultado de la busqueda--%>
+             <div class="col-md-12 text-center mt-4">
+                <asp:Button ID="btnBuscar" runat="server" Text="Buscar" CssClass="btn btn-primary" OnClick="btnBuscar_Click" />
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <asp:GridView ID="gvResultados" runat="server" CssClass="table table-striped table-bordered"
+                        AutoGenerateColumns="true">
+                    </asp:GridView>
+                </div>
+            </div>
+
+            <%-- fin del desarrollo--%>  
         </div>
     </main>
 

@@ -14,6 +14,6 @@
                     <a href="RegistroPaciente.aspx" class="btn btn-primary">Registrarme como Paciente</a>
                 </div>
             </div>
-
+            </div>
     </main>
 </asp:Content>
