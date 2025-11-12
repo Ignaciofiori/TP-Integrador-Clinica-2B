@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Consultorio.cs" />
+    <Compile Include="Descuento.cs" />
     <Compile Include="Especialidad.cs" />
     <Compile Include="Factura.cs" />
     <Compile Include="HorarioAtencion.cs" />

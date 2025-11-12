@@ -43,7 +43,9 @@
   <ItemGroup>
     <Compile Include="AccesoDatos.cs" />
     <Compile Include="ConsultorioNegocio.cs" />
+    <Compile Include="DescuentoNegocio.cs" />
     <Compile Include="EspecialidadNegocio.cs" />
+    <Compile Include="FacturaNegocio.cs" />
     <Compile Include="HorarIoAtencionNegocio.cs" />
     <Compile Include="ObraSocialNegocio.cs" />
     <Compile Include="PacienteNegocio.cs" />
