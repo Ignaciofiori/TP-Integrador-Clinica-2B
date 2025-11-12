@@ -3,11 +3,12 @@
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
 
     <main>
-        <section class="row" aria-labelledby="tituloApp">
+        <section class="row mt-4" aria-labelledby="tituloApp">
             <h1 id="tituloApp">Tu salud, más cerca: agendá tus turnos online.</h1>
+            <h3> Más fácil, más rápido. </h3>
         </section>
 
-        <div class="row">
+        <div class="row mt-5">
 
               <%--desarrollo--%>
 
@@ -35,7 +36,7 @@
               </div>
 
            <%-- aca se ve el resultado de la busqueda--%>
-             <div class="col-md-12 text-center mt-4">
+             <div class="col-md-12 text-center mt-5">
                 <asp:Button ID="btnBuscar" runat="server" Text="Buscar" CssClass="btn btn-primary" OnClick="btnBuscar_Click" />
             </div>
 

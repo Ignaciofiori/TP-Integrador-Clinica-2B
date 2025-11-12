@@ -6,7 +6,7 @@
 <head runat="server">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%: Page.Title %> - My ASP.NET Application</title>
+    <title><%: Page.Title %> - SaludYa! </title>
 
     <asp:PlaceHolder runat="server">
         <%: Scripts.Render("~/bundles/modernizr") %>
@@ -37,9 +37,9 @@
             </Scripts>
         </asp:ScriptManager>
 
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary">
             <div class="container">
-                <a class="navbar-brand" runat="server" href="~/">Nombre APP Turnos</a>
+                <a class="navbar-brand" runat="server" href="~/">SaludYa!</a>
                 <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -53,15 +53,17 @@
                 </div>
             </div>
         </nav>
+
+
         <div class="container body-content">
             <asp:ContentPlaceHolder ID="MainContent" runat="server">
             </asp:ContentPlaceHolder>
             <hr />
             <footer class="text-center mt-5 pt-4 pb-4 bg-light">
                 <p class="mb-0">
-                    &copy; <%: DateTime.Now.Year %> - NOMBRE Clínica Online<br>
+                    &copy; <%: DateTime.Now.Year %> - SaludYa! Clínica Online<br>
                     ¿Necesitás ayuda con tu cuenta o con la reserva de turnos?<br>
-                    Contactanos en info@NOMBRECLINICA.com. Estamos para ayudarte.
+                    Contactanos en info@SaludYa.com. Estamos para ayudarte.
                  <%--   Contactanos en <a href="mailto:info@NOMBRECLINICA.com">info@NOMBRECLINICA.com</a>. Estamos para ayudarte.--%>
                 </p>
             </footer>
