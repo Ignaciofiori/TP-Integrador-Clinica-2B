@@ -25,20 +25,21 @@ namespace TP_Integrador_Clinica_WEB
         {
             try
             {
-                AccesoDatos datos = new AccesoDatos();
-                datos.setearConsulta("SELECT P.id_profesional, (Pe.nombre + ' ' + Pe.apellido) AS NombreCompleto FROM Profesional P INNER JOIN Persona Pe ON P.id_profesional = Pe.id_persona;");
-                datos.ejecutarLectura();
+                ProfesionalNegocio profNeg = new ProfesionalNegocio();
+                List<Profesional> profesionales = profNeg.Listar();
 
-                ddlProfesional.DataSource = datos.Lector;
-                ddlProfesional.DataTextField = "NombreCompleto";
-                ddlProfesional.DataValueField = "id_profesional";
+                foreach (var p in profesionales)
+                {
+                    //concateno para mostrar
+                    p.Nombre = p.Nombre + " " + p.Apellido;
+                }
+
+                ddlProfesional.DataSource = profesionales;
+                ddlProfesional.DataTextField = "Nombre"; 
+                ddlProfesional.DataValueField = "Id";
                 ddlProfesional.DataBind();
-                datos.cerrarConexion();
 
-                // agrega uun texto en defecto (como guía, sin valor)
                 ddlProfesional.Items.Insert(0, new ListItem("Seleccione un/a profesional...", ""));
-
-                // se asegura que se seleccione el texto en defecto
                 ddlProfesional.SelectedIndex = 0;
             }
             catch (Exception ex)
@@ -51,15 +52,12 @@ namespace TP_Integrador_Clinica_WEB
         {
             try
             {
-                AccesoDatos datos = new AccesoDatos();
-                datos.setearConsulta("SELECT id_especialidad, nombre FROM Especialidad");
-                datos.ejecutarLectura();
+                EspecialidadNegocio espNeg = new EspecialidadNegocio();
 
-                ddlEspecialidad.DataSource = datos.Lector;
-                ddlEspecialidad.DataTextField = "nombre";
-                ddlEspecialidad.DataValueField = "id_especialidad";
+                ddlEspecialidad.DataSource = espNeg.Listar();
+                ddlEspecialidad.DataTextField = "Nombre";
+                ddlEspecialidad.DataValueField = "Id";
                 ddlEspecialidad.DataBind();
-                datos.cerrarConexion();
 
                 ddlEspecialidad.Items.Insert(0, new ListItem("Seleccione una especialidad...", ""));
                 ddlEspecialidad.SelectedIndex = 0;
@@ -74,18 +72,15 @@ namespace TP_Integrador_Clinica_WEB
         {
             try
             {
-                AccesoDatos datos = new AccesoDatos();
-                datos.setearConsulta("SELECT id_obra_social, nombre FROM ObraSocial");
-                datos.ejecutarLectura();
+                ObraSocialNegocio obraNeg = new ObraSocialNegocio();
 
-                ddlCobertura.DataSource = datos.Lector;
-                ddlCobertura.DataTextField = "nombre";
-                ddlCobertura.DataValueField = "id_obra_social";
+                ddlCobertura.DataSource = obraNeg.Listar();
+                ddlCobertura.DataTextField = "Nombre";
+                ddlCobertura.DataValueField = "Id";
                 ddlCobertura.DataBind();
-                datos.cerrarConexion();
 
                 ddlCobertura.Items.Insert(0, new ListItem("Seleccione una cobertura...", ""));
-                ddlEspecialidad.SelectedIndex = 0;
+                ddlCobertura.SelectedIndex = 0;
             }
             catch (Exception ex)
             {

@@ -13,7 +13,7 @@ namespace modelo
         // un profesional puede tener varias especialidades
         public List<Especialidad> Especialidades { get; set; }
 
-     // un profesional puede trabajar con varias obras sociales
+        // un profesional puede trabajar con varias obras sociales
         public List<ObraSocial> ObrasSociales { get; set; }
     }
 }

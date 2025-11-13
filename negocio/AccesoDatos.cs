@@ -19,9 +19,9 @@ namespace negocio
 
         public AccesoDatos()
         {
-          //  connection = new SqlConnection("Server=localhost,1433;Database=consultorio_db;User Id=sa;Password=BaseDeDatos#2;TrustServerCertificate=True;Integrated Security=False;");
+            connection = new SqlConnection("Server=localhost,1433;Database=consultorio_db;User Id=sa;Password=BaseDeDatos#2;TrustServerCertificate=True;Integrated Security=False;");
             //connection = new SqlConnection("Server=localhost;Database=PROMOS_DB;Integrated Security=True;");
-            connection = new SqlConnection("Server=DANA\\SQLEXPRESS;Database=consultorio_db;Trusted_Connection=True;TrustServerCertificate=True;");
+            //connection = new SqlConnection("Server=DANA\\SQLEXPRESS;Database=consultorio_db;Trusted_Connection=True;TrustServerCertificate=True;");
             command = new SqlCommand();
         }
 
@@ -77,38 +77,38 @@ namespace negocio
 
         public int ejecutarAccionScalar()
         {
-            // Asegurarse de que el comando usa la conexión y la consulta seteadas
+          
             command.Connection = connection;
 
             try
             {
-                // 1. Abre la conexión si está cerrada
+
                 if (connection.State != System.Data.ConnectionState.Open)
                 {
                     connection.Open();
                 }
 
-                // 2. ExecuteScalar ejecuta la consulta y devuelve la primera columna (el ID)
+               
                 object resultado = command.ExecuteScalar();
 
-                // 3. Verifica si el resultado es válido y lo convierte a entero (int)
+                
                 if (resultado != null && resultado != DBNull.Value)
                 {
-                    // El resultado de ExecuteScalar es un 'object', lo convertimos a entero
+                
                     return Convert.ToInt32(resultado);
                 }
 
-                // Si la consulta no devuelve nada, devolvemos un valor que indica error
+                
                 return -1;
             }
             catch (Exception ex)
             {
-                // Propaga el error para que sea manejado por la capa de negocio
+                
                 throw new Exception("Error al ejecutar acción Scalar: " + ex.Message, ex);
             }
             finally
             {
-                // 4. Cierra la conexión
+             
                 cerrarConexion();
             }
         }
