@@ -46,9 +46,31 @@
                 </button>
                 <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                       <%-- <li class="nav-item"><a class="nav-link" runat="server" href="~/">Home</a></li>--%>
-                        <li class="nav-item"><a class="nav-link" runat="server" href="~/About">Registrate</a></li>
-                        <li class="nav-item"><a class="nav-link" runat="server" href="~/Contact">Inicia Sesion</a></li>
+                                           <%-- <li class="nav-item"><a class="nav-link" runat="server" href="~/">Home</a></li>--%>
+                       
+                        <li class="nav-item">
+                            <a class="nav-link" runat="server" href="~/Pacientes.aspx">Pacientes</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" runat="server" href="~/Profesionales.aspx">Profesionales</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" runat="server" href="~/ListadoObrasSociales.aspx">Obras Sociales</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" runat="server" href="~/ListadoEspecialidades.aspx">Especialidades</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" runat="server" href="~/Turnos.aspx">Turnos</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" runat="server" href="~/Facturacion.aspx">Facturación</a>
+                        </li>
                     </ul>
                 </div>
             </div>
