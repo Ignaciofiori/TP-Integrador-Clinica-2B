@@ -113,9 +113,13 @@
     <Content Include="Content\Site.css" />
     <Content Include="Default.aspx" />
     <Content Include="favicon.ico" />
+    <Content Include="FormularioDescuento.aspx" />
     <Content Include="FormularioEspecialidad.aspx" />
+    <Content Include="FormularioObraSocial.aspx" />
     <Content Include="Global.asax" />
+    <Content Include="ListadoDescuentos.aspx" />
     <Content Include="ListadoEspecialidades.aspx" />
+    <Content Include="ListadoObrasSociales.aspx" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -178,15 +182,31 @@
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
+    <Compile Include="FormularioDescuento.aspx.cs">
+      <DependentUpon>FormularioDescuento.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="FormularioEspecialidad.aspx.cs">
       <DependentUpon>FormularioEspecialidad.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="FormularioObraSocial.aspx.cs">
+      <DependentUpon>FormularioObraSocial.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="ListadoDescuentos.aspx.cs">
+      <DependentUpon>ListadoDescuentos.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="ListadoEspecialidades.aspx.cs">
       <DependentUpon>ListadoEspecialidades.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ListadoObrasSociales.aspx.cs">
+      <DependentUpon>ListadoObrasSociales.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
