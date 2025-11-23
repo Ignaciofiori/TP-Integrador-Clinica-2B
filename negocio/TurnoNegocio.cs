@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using modelo;
+﻿using modelo;
 using System;
 using System.Collections.Generic;
 
@@ -11,20 +6,19 @@ namespace negocio
 {
     public class TurnoNegocio
     {
+        private readonly PacienteNegocio pacienteNeg = new PacienteNegocio();
+        private readonly HorarioAtencionNegocio horarioNeg = new HorarioAtencionNegocio();
+        private readonly ObraSocialNegocio obraNeg = new ObraSocialNegocio();
+
         public List<Turno> Listar()
         {
             List<Turno> lista = new List<Turno>();
             AccesoDatos datos = new AccesoDatos();
 
-            PacienteNegocio pacienteNeg = new PacienteNegocio();
-            HorarioAtencionNegocio horarioNeg = new HorarioAtencionNegocio();
-            EspecialidadNegocio especialidadNeg = new EspecialidadNegocio();
-            ObraSocialNegocio obraNeg = new ObraSocialNegocio();
-
             try
             {
                 datos.setearConsulta(@"
-                    SELECT id_turno, id_paciente, id_horario, id_especialidad, id_obra_social,
+                    SELECT id_turno, id_paciente, id_horario, id_obra_social,
                            fecha_turno, hora_turno, estado, monto_total
                     FROM Turno
                 ");
@@ -33,24 +27,7 @@ namespace negocio
 
                 while (datos.Lector.Read())
                 {
-                    Turno aux = new Turno();
-
-                    aux.Id = (int)datos.Lector["id_turno"];
-                    aux.Paciente = pacienteNeg.BuscarPorId((int)datos.Lector["id_paciente"]);
-                    aux.Horario = horarioNeg.BuscarPorId((int)datos.Lector["id_horario"]);
-                    aux.Especialidad = especialidadNeg.BuscarPorId((int)datos.Lector["id_especialidad"]);
-
-                    if (!(datos.Lector["id_obra_social"] is DBNull))
-                        aux.ObraSocial = obraNeg.BuscarPorId((int)datos.Lector["id_obra_social"]);
-
-                    aux.FechaTurno = (DateTime)datos.Lector["fecha_turno"];
-                    aux.HoraTurno = (TimeSpan)datos.Lector["hora_turno"];
-                    aux.Estado = (string)datos.Lector["estado"];
-
-                    if (!(datos.Lector["monto_total"] is DBNull))
-                        aux.MontoTotal = (decimal)datos.Lector["monto_total"];
-
-                    lista.Add(aux);
+                    lista.Add(MapearTurno(datos));
                 }
 
                 return lista;
@@ -66,15 +43,10 @@ namespace negocio
             List<Turno> lista = new List<Turno>();
             AccesoDatos datos = new AccesoDatos();
 
-            PacienteNegocio pacienteNeg = new PacienteNegocio();
-            HorarioAtencionNegocio horarioNeg = new HorarioAtencionNegocio();
-            EspecialidadNegocio especialidadNeg = new EspecialidadNegocio();
-            ObraSocialNegocio obraNeg = new ObraSocialNegocio();
-
             try
             {
                 datos.setearConsulta(@"
-                    SELECT id_turno, id_paciente, id_horario, id_especialidad, id_obra_social,
+                    SELECT id_turno, id_paciente, id_horario, id_obra_social,
                            fecha_turno, hora_turno, estado, monto_total
                     FROM Turno
                     WHERE id_paciente = @id
@@ -85,24 +57,7 @@ namespace negocio
 
                 while (datos.Lector.Read())
                 {
-                    Turno aux = new Turno();
-
-                    aux.Id = (int)datos.Lector["id_turno"];
-                    aux.Paciente = pacienteNeg.BuscarPorId(idPaciente);
-                    aux.Horario = horarioNeg.BuscarPorId((int)datos.Lector["id_horario"]);
-                    aux.Especialidad = especialidadNeg.BuscarPorId((int)datos.Lector["id_especialidad"]);
-
-                    if (!(datos.Lector["id_obra_social"] is DBNull))
-                        aux.ObraSocial = obraNeg.BuscarPorId((int)datos.Lector["id_obra_social"]);
-
-                    aux.FechaTurno = (DateTime)datos.Lector["fecha_turno"];
-                    aux.HoraTurno = (TimeSpan)datos.Lector["hora_turno"];
-                    aux.Estado = (string)datos.Lector["estado"];
-
-                    if (!(datos.Lector["monto_total"] is DBNull))
-                        aux.MontoTotal = (decimal)datos.Lector["monto_total"];
-
-                    lista.Add(aux);
+                    lista.Add(MapearTurno(datos));
                 }
 
                 return lista;
@@ -118,15 +73,10 @@ namespace negocio
             List<Turno> lista = new List<Turno>();
             AccesoDatos datos = new AccesoDatos();
 
-            PacienteNegocio pacienteNeg = new PacienteNegocio();
-            HorarioAtencionNegocio horarioNeg = new HorarioAtencionNegocio();
-            EspecialidadNegocio especialidadNeg = new EspecialidadNegocio();
-            ObraSocialNegocio obraNeg = new ObraSocialNegocio();
-
             try
             {
                 datos.setearConsulta(@"
-                    SELECT t.id_turno, t.id_paciente, t.id_horario, t.id_especialidad, t.id_obra_social,
+                    SELECT t.id_turno, t.id_paciente, t.id_horario, t.id_obra_social,
                            t.fecha_turno, t.hora_turno, t.estado, t.monto_total
                     FROM Turno t
                     INNER JOIN HorarioAtencion h ON t.id_horario = h.id_horario
@@ -138,24 +88,7 @@ namespace negocio
 
                 while (datos.Lector.Read())
                 {
-                    Turno aux = new Turno();
-
-                    aux.Id = (int)datos.Lector["id_turno"];
-                    aux.Paciente = pacienteNeg.BuscarPorId((int)datos.Lector["id_paciente"]);
-                    aux.Horario = horarioNeg.BuscarPorId((int)datos.Lector["id_horario"]);
-                    aux.Especialidad = especialidadNeg.BuscarPorId((int)datos.Lector["id_especialidad"]);
-
-                    if (!(datos.Lector["id_obra_social"] is DBNull))
-                        aux.ObraSocial = obraNeg.BuscarPorId((int)datos.Lector["id_obra_social"]);
-
-                    aux.FechaTurno = (DateTime)datos.Lector["fecha_turno"];
-                    aux.HoraTurno = (TimeSpan)datos.Lector["hora_turno"];
-                    aux.Estado = (string)datos.Lector["estado"];
-
-                    if (!(datos.Lector["monto_total"] is DBNull))
-                        aux.MontoTotal = (decimal)datos.Lector["monto_total"];
-
-                    lista.Add(aux);
+                    lista.Add(MapearTurno(datos));
                 }
 
                 return lista;
@@ -171,42 +104,20 @@ namespace negocio
             Turno aux = null;
             AccesoDatos datos = new AccesoDatos();
 
-            // Negocios relacionados para reconstruir objetos
-            PacienteNegocio pacienteNeg = new PacienteNegocio();
-            HorarioAtencionNegocio horarioNeg = new HorarioAtencionNegocio();
-            EspecialidadNegocio especialidadNeg = new EspecialidadNegocio();
-            ObraSocialNegocio obraNeg = new ObraSocialNegocio();
-
             try
             {
                 datos.setearConsulta(@"
-            SELECT id_turno, id_paciente, id_horario, id_especialidad, id_obra_social,
-                   fecha_turno, hora_turno, estado, monto_total
-            FROM Turno
-            WHERE id_turno = @id");
+                    SELECT id_turno, id_paciente, id_horario, id_obra_social,
+                           fecha_turno, hora_turno, estado, monto_total
+                    FROM Turno
+                    WHERE id_turno = @id
+                ");
 
                 datos.setearParametros("@id", idTurno);
                 datos.ejecutarLectura();
 
                 if (datos.Lector.Read())
-                {
-                    aux = new Turno();
-
-                    aux.Id = (int)datos.Lector["id_turno"];
-                    aux.Paciente = pacienteNeg.BuscarPorId((int)datos.Lector["id_paciente"]);
-                    aux.Horario = horarioNeg.BuscarPorId((int)datos.Lector["id_horario"]);
-                    aux.Especialidad = especialidadNeg.BuscarPorId((int)datos.Lector["id_especialidad"]);
-
-                    if (!(datos.Lector["id_obra_social"] is DBNull))
-                        aux.ObraSocial = obraNeg.BuscarPorId((int)datos.Lector["id_obra_social"]);
-
-                    aux.FechaTurno = (DateTime)datos.Lector["fecha_turno"];
-                    aux.HoraTurno = (TimeSpan)datos.Lector["hora_turno"];
-                    aux.Estado = (string)datos.Lector["estado"];
-
-                    if (!(datos.Lector["monto_total"] is DBNull))
-                        aux.MontoTotal = (decimal)datos.Lector["monto_total"];
-                }
+                    aux = MapearTurno(datos);
 
                 return aux;
             }
@@ -216,6 +127,29 @@ namespace negocio
             }
         }
 
+        private Turno MapearTurno(AccesoDatos datos)
+        {
+            Turno aux = new Turno();
+
+            aux.IdTurno = (int)datos.Lector["id_turno"];
+
+            aux.Paciente = pacienteNeg.BuscarPorId((int)datos.Lector["id_paciente"]);
+            aux.Horario = horarioNeg.BuscarPorId((int)datos.Lector["id_horario"]);
+
+
+            if (!(datos.Lector["id_obra_social"] is DBNull))
+                aux.ObraSocial = obraNeg.BuscarPorId((int)datos.Lector["id_obra_social"]);
+
+            aux.FechaTurno = (DateTime)datos.Lector["fecha_turno"];
+            aux.HoraTurno = (TimeSpan)datos.Lector["hora_turno"];
+            aux.Estado = (string)datos.Lector["estado"];
+
+            if (!(datos.Lector["monto_total"] is DBNull))
+                aux.MontoTotal = (decimal)datos.Lector["monto_total"];
+
+            return aux;
+        }
+
         public void RegistrarTurno(Turno t)
         {
             AccesoDatos datos = new AccesoDatos();
@@ -223,14 +157,17 @@ namespace negocio
             try
             {
                 datos.setearConsulta(@"
-                    INSERT INTO Turno (id_paciente, id_horario, id_especialidad, id_obra_social, fecha_turno, hora_turno, estado, monto_total)
-                    VALUES (@pac, @hor, @esp, @obra, @fecha, @hora, @estado, NULL) -- FUNCION DE CALCULO A IMPLEMENTAR
+                    INSERT INTO Turno (id_paciente, id_horario, id_obra_social, 
+                                       fecha_turno, hora_turno, estado, monto_total)
+                    VALUES (@pac, @hor, @obra, @fecha, @hora, @estado, NULL)
                 ");
 
-                datos.setearParametros("@pac", t.Paciente.Id);
-                datos.setearParametros("@hor", t.Horario.Id);
-                datos.setearParametros("@esp", t.Especialidad.Id);
-                datos.setearParametros("@obra", t.ObraSocial != null ? (object)t.ObraSocial.Id : DBNull.Value);
+                datos.setearParametros("@pac", t.Paciente.IdPaciente);
+                datos.setearParametros("@hor", t.Horario.IdHorario);
+
+                datos.setearParametros("@obra",
+                    t.ObraSocial != null ? (object)t.ObraSocial.IdObraSocial : DBNull.Value);
+
                 datos.setearParametros("@fecha", t.FechaTurno);
                 datos.setearParametros("@hora", t.HoraTurno);
                 datos.setearParametros("@estado", t.Estado);
@@ -260,14 +197,8 @@ namespace negocio
             }
         }
 
-        public void CancelarTurno(int idTurno)
-        {
-            CambiarEstado(idTurno, "cancelado");
-        }
+        public void CancelarTurno(int idTurno) => CambiarEstado(idTurno, "cancelado");
 
-        public void ConfirmarAsistencia(int idTurno)
-        {
-            CambiarEstado(idTurno, "asistido");
-        }
+        public void ConfirmarAsistencia(int idTurno) => CambiarEstado(idTurno, "asistido");
     }
 }

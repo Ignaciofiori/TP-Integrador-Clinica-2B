@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using modelo;
+﻿using modelo;
 using System;
 using System.Collections.Generic;
 
@@ -18,12 +12,14 @@ namespace negocio
             AccesoDatos datos = new AccesoDatos();
 
             ProfesionalNegocio profesionalNeg = new ProfesionalNegocio();
+            EspecialidadNegocio especialidadNeg = new EspecialidadNegocio();
             ConsultorioNegocio consultorioNeg = new ConsultorioNegocio();
 
             try
             {
                 datos.setearConsulta(@"
-                    SELECT id_horario, id_profesional, id_consultorio, dia_semana, hora_inicio, hora_fin, activo
+                    SELECT id_horario, id_profesional, id_especialidad,
+                           id_consultorio, dia_semana, hora_inicio, hora_fin, activo
                     FROM HorarioAtencion
                     WHERE activo = 1");
 
@@ -33,19 +29,30 @@ namespace negocio
                 {
                     HorarioAtencion aux = new HorarioAtencion();
 
-                    aux.Id = (int)datos.Lector["id_horario"];
+                    // ID
+                    aux.IdHorario = (int)datos.Lector["id_horario"];
+
+                    // Profesional
                     aux.Profesional = profesionalNeg.BuscarPorId((int)datos.Lector["id_profesional"]);
+
+                    // Especialidad (OBJETO)
+                    aux.Especialidad = especialidadNeg.BuscarPorId((int)datos.Lector["id_especialidad"]);
+
+                    // Consultorio
                     aux.Consultorio = consultorioNeg.BuscarPorId((int)datos.Lector["id_consultorio"]);
 
+                    // Día semana
                     if (!(datos.Lector["dia_semana"] is DBNull))
                         aux.DiaSemana = (string)datos.Lector["dia_semana"];
 
+                    // Horas
                     if (!(datos.Lector["hora_inicio"] is DBNull))
                         aux.HoraInicio = (TimeSpan)datos.Lector["hora_inicio"];
 
                     if (!(datos.Lector["hora_fin"] is DBNull))
                         aux.HoraFin = (TimeSpan)datos.Lector["hora_fin"];
 
+                    // Activo
                     if (!(datos.Lector["activo"] is DBNull))
                         aux.Activo = (bool)datos.Lector["activo"];
 
@@ -60,18 +67,22 @@ namespace negocio
             }
         }
 
+
+
         public List<HorarioAtencion> ListarPorProfesional(int idProfesional)
         {
             List<HorarioAtencion> lista = new List<HorarioAtencion>();
             AccesoDatos datos = new AccesoDatos();
 
             ProfesionalNegocio profesionalNeg = new ProfesionalNegocio();
+            EspecialidadNegocio especialidadNeg = new EspecialidadNegocio();
             ConsultorioNegocio consultorioNeg = new ConsultorioNegocio();
 
             try
             {
                 datos.setearConsulta(@"
-                    SELECT id_horario, id_profesional, id_consultorio, dia_semana, hora_inicio, hora_fin, activo
+                    SELECT id_horario, id_profesional, id_especialidad,
+                           id_consultorio, dia_semana, hora_inicio, hora_fin, activo
                     FROM HorarioAtencion
                     WHERE id_profesional = @id AND activo = 1");
 
@@ -82,9 +93,11 @@ namespace negocio
                 {
                     HorarioAtencion aux = new HorarioAtencion();
 
-                    aux.Id = (int)datos.Lector["id_horario"];
+                    aux.IdHorario = (int)datos.Lector["id_horario"];
                     aux.Profesional = profesionalNeg.BuscarPorId((int)datos.Lector["id_profesional"]);
+                    aux.Especialidad = especialidadNeg.BuscarPorId((int)datos.Lector["id_especialidad"]);
                     aux.Consultorio = consultorioNeg.BuscarPorId((int)datos.Lector["id_consultorio"]);
+
                     aux.DiaSemana = (string)datos.Lector["dia_semana"];
                     aux.HoraInicio = (TimeSpan)datos.Lector["hora_inicio"];
                     aux.HoraFin = (TimeSpan)datos.Lector["hora_fin"];
@@ -101,17 +114,20 @@ namespace negocio
             }
         }
 
+
+
         public HorarioAtencion BuscarPorId(int id)
         {
             AccesoDatos datos = new AccesoDatos();
             ProfesionalNegocio profesionalNeg = new ProfesionalNegocio();
+            EspecialidadNegocio especialidadNeg = new EspecialidadNegocio();
             ConsultorioNegocio consultorioNeg = new ConsultorioNegocio();
 
             try
             {
                 datos.setearConsulta(@"
-                    SELECT id_horario, id_profesional, id_consultorio,
-                           dia_semana, hora_inicio, hora_fin, activo
+                    SELECT id_horario, id_profesional, id_especialidad, 
+                           id_consultorio, dia_semana, hora_inicio, hora_fin, activo
                     FROM HorarioAtencion
                     WHERE id_horario = @id");
 
@@ -124,37 +140,15 @@ namespace negocio
                 {
                     aux = new HorarioAtencion();
 
-                    // PK
-                    if (!(datos.Lector["id_horario"] is DBNull))
-                        aux.Id = (int)datos.Lector["id_horario"];
+                    aux.IdHorario = (int)datos.Lector["id_horario"];
+                    aux.Profesional = profesionalNeg.BuscarPorId((int)datos.Lector["id_profesional"]);
+                    aux.Especialidad = especialidadNeg.BuscarPorId((int)datos.Lector["id_especialidad"]);
+                    aux.Consultorio = consultorioNeg.BuscarPorId((int)datos.Lector["id_consultorio"]);
 
-                    // Profesional (objeto)
-                    if (!(datos.Lector["id_profesional"] is DBNull))
-                        aux.Profesional = profesionalNeg.BuscarPorId((int)datos.Lector["id_profesional"]);
-
-                    // Consultorio (objeto)
-                    if (!(datos.Lector["id_consultorio"] is DBNull))
-                        aux.Consultorio = consultorioNeg.BuscarPorId((int)datos.Lector["id_consultorio"]);
-
-                    // Día semana
-                    if (!(datos.Lector["dia_semana"] is DBNull))
-                        aux.DiaSemana = (string)datos.Lector["dia_semana"];
-
-                    // Horas (TimeSpan)
-                    if (!(datos.Lector["hora_inicio"] is DBNull))
-                        aux.HoraInicio = (TimeSpan)datos.Lector["hora_inicio"];
-
-                    if (!(datos.Lector["hora_fin"] is DBNull))
-                        aux.HoraFin = (TimeSpan)datos.Lector["hora_fin"];
-
-                    // Activo (si tu modelo lo tiene)
-                    // Agregá `public bool Activo { get; set; }` en HorarioAtencion
-                    if (!(datos.Lector["activo"] is DBNull))
-                    {
-                        // Si tu propiedad existe:
-                        // aux.Activo = (bool)datos.Lector["activo"];
-                        // Si todavía no la agregaste, podés ignorar esta línea temporalmente.
-                    }
+                    aux.DiaSemana = (string)datos.Lector["dia_semana"];
+                    aux.HoraInicio = (TimeSpan)datos.Lector["hora_inicio"];
+                    aux.HoraFin = (TimeSpan)datos.Lector["hora_fin"];
+                    aux.Activo = (bool)datos.Lector["activo"];
                 }
 
                 return aux;
@@ -165,6 +159,8 @@ namespace negocio
             }
         }
 
+
+
         public void Agregar(HorarioAtencion h)
         {
             AccesoDatos datos = new AccesoDatos();
@@ -172,11 +168,14 @@ namespace negocio
             try
             {
                 datos.setearConsulta(@"
-                    INSERT INTO HorarioAtencion (id_profesional, id_consultorio, dia_semana, hora_inicio, hora_fin, activo)
-                    VALUES (@prof, @cons, @dia, @inicio, @fin, @activo)");
+                    INSERT INTO HorarioAtencion
+                    (id_profesional, id_especialidad, id_consultorio,
+                     dia_semana, hora_inicio, hora_fin, activo)
+                    VALUES (@prof, @esp, @cons, @dia, @inicio, @fin, @activo)");
 
-                datos.setearParametros("@prof", h.Profesional.Id);
-                datos.setearParametros("@cons", h.Consultorio.Id);
+                datos.setearParametros("@prof", h.Profesional.IdProfesional);
+                datos.setearParametros("@esp", h.Especialidad.IdEspecialidad);
+                datos.setearParametros("@cons", h.Consultorio.IdConsultorio);
                 datos.setearParametros("@dia", h.DiaSemana);
                 datos.setearParametros("@inicio", h.HoraInicio);
                 datos.setearParametros("@fin", h.HoraFin);
@@ -189,6 +188,8 @@ namespace negocio
                 datos.cerrarConexion();
             }
         }
+
+
 
         public void Modificar(HorarioAtencion h)
         {
@@ -199,6 +200,7 @@ namespace negocio
                 datos.setearConsulta(@"
                     UPDATE HorarioAtencion
                     SET id_profesional = @prof,
+                        id_especialidad = @esp,
                         id_consultorio = @cons,
                         dia_semana = @dia,
                         hora_inicio = @inicio,
@@ -206,13 +208,14 @@ namespace negocio
                         activo = @activo
                     WHERE id_horario = @id");
 
-                datos.setearParametros("@prof", h.Profesional.Id);
-                datos.setearParametros("@cons", h.Consultorio.Id);
+                datos.setearParametros("@prof", h.Profesional.IdProfesional);
+                datos.setearParametros("@esp", h.Especialidad.IdEspecialidad);
+                datos.setearParametros("@cons", h.Consultorio.IdConsultorio);
                 datos.setearParametros("@dia", h.DiaSemana);
                 datos.setearParametros("@inicio", h.HoraInicio);
                 datos.setearParametros("@fin", h.HoraFin);
                 datos.setearParametros("@activo", h.Activo);
-                datos.setearParametros("@id", h.Id);
+                datos.setearParametros("@id", h.IdHorario);
 
                 datos.ejecutarAccion();
             }
@@ -221,6 +224,8 @@ namespace negocio
                 datos.cerrarConexion();
             }
         }
+
+
 
         public void Desactivar(int id)
         {
@@ -237,6 +242,8 @@ namespace negocio
                 datos.cerrarConexion();
             }
         }
+
+
 
         public void Activar(int id)
         {

@@ -7,7 +7,7 @@ namespace TP_Integrador_Clinica_WEB
 {
     public partial class ListadoDescuentos : System.Web.UI.Page
     {
-        // 🛑 Declaraciones para vinculación manual
+        //  Declaraciones para vinculación manual
         protected Label lblNombreObraSocial;
         protected HyperLink btnNuevoDescuento;
         protected GridView dgvDescuentos;
@@ -38,7 +38,7 @@ namespace TP_Integrador_Clinica_WEB
             DescuentoNegocio dNegocio = new DescuentoNegocio();
 
             // 1. Mostrar el nombre de la OS
-            modelo.ObraSocial os = osNegocio.BuscarPorId(idObraSocial);
+            ObraSocial os = osNegocio.BuscarPorId(idObraSocial);
             lblNombreObraSocial.Text = os != null ? os.Nombre : "No Encontrada";
 
             // 2. Cargar la grilla de descuentos

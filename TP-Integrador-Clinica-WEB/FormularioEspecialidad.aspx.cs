@@ -75,7 +75,7 @@ namespace TP_Integrador_Clinica_WEB
                 else
                 {
                     // MODIFICACIÓN (Patrón ABM: Modificar)
-                    nuevaEspecialidad.Id = int.Parse(hfIdEspecialidad.Value);
+                    nuevaEspecialidad.IdEspecialidad = int.Parse(hfIdEspecialidad.Value);
                     negocio.Modificar(nuevaEspecialidad);
                 }
 

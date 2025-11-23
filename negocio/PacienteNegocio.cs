@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using modelo;
-
 
 namespace negocio
 {
@@ -20,11 +15,11 @@ namespace negocio
             try
             {
                 datos.setearConsulta(@"
-            SELECT p.id_persona, p.nombre, p.apellido, p.dni, p.fecha_nacimiento,
-                   p.telefono, p.email, p.direccion, p.activo,
-                   pa.id_obra_social, pa.nro_afiliado
-            FROM Persona p
-            INNER JOIN Paciente pa ON p.id_persona = pa.id_paciente");
+            SELECT id_paciente, nombre, apellido, dni, fecha_nacimiento,
+                   telefono, email, direccion, activo,
+                   id_obra_social, nro_afiliado
+            FROM Paciente
+            WHERE activo = 1");
 
                 datos.ejecutarLectura();
 
@@ -32,7 +27,7 @@ namespace negocio
                 {
                     Paciente aux = new Paciente();
 
-                    aux.Id = (int)datos.Lector["id_persona"];
+                    aux.IdPaciente = (int)datos.Lector["id_paciente"];
 
                     if (!(datos.Lector["nombre"] is DBNull))
                         aux.Nombre = (string)datos.Lector["nombre"];
@@ -41,7 +36,7 @@ namespace negocio
                         aux.Apellido = (string)datos.Lector["apellido"];
 
                     if (!(datos.Lector["dni"] is DBNull))
-                        aux.DNI = (string)datos.Lector["dni"];
+                        aux.Dni = (string)datos.Lector["dni"];
 
                     if (!(datos.Lector["fecha_nacimiento"] is DBNull))
                         aux.FechaNacimiento = (DateTime)datos.Lector["fecha_nacimiento"];
@@ -58,16 +53,15 @@ namespace negocio
                     if (!(datos.Lector["activo"] is DBNull))
                         aux.Activo = (bool)datos.Lector["activo"];
 
-                    // Obra Social
+                    // SI TIENE obra social > la busco por negocio
                     if (!(datos.Lector["id_obra_social"] is DBNull))
-                        aux.ObraSocial = obraNegocio.BuscarPorId((int)datos.Lector["id_obra_social"]);
+                    {
+                        int idObra = (int)datos.Lector["id_obra_social"];
+                        aux.ObraSocial = obraNegocio.BuscarPorId(idObra);
+                    }
 
-                    // Número afiliado
                     if (!(datos.Lector["nro_afiliado"] is DBNull))
-                        aux.NumeroAfiliado = (string)datos.Lector["nro_afiliado"];
-
-                    // Turnos todavia no
-                    aux.Turnos = null;
+                        aux.NroAfiliado = (string)datos.Lector["nro_afiliado"];
 
                     lista.Add(aux);
                 }
@@ -84,6 +78,7 @@ namespace negocio
             }
         }
 
+
         public Paciente BuscarPorId(int id)
         {
             AccesoDatos datos = new AccesoDatos();
@@ -92,12 +87,11 @@ namespace negocio
             try
             {
                 datos.setearConsulta(@"
-            SELECT p.id_persona, p.nombre, p.apellido, p.dni, p.fecha_nacimiento,
-                   p.telefono, p.email, p.direccion, p.activo,
-                   pa.id_obra_social, pa.nro_afiliado
-            FROM Persona p
-            INNER JOIN Paciente pa ON p.id_persona = pa.id_paciente
-            WHERE p.id_persona = @id");
+            SELECT id_paciente, nombre, apellido, dni, fecha_nacimiento,
+                   telefono, email, direccion, activo,
+                   id_obra_social, nro_afiliado
+            FROM Paciente
+            WHERE id_paciente = @id AND activo = 1");
 
                 datos.setearParametros("@id", id);
                 datos.ejecutarLectura();
@@ -106,7 +100,7 @@ namespace negocio
                 {
                     Paciente aux = new Paciente();
 
-                    aux.Id = (int)datos.Lector["id_persona"];
+                    aux.IdPaciente = (int)datos.Lector["id_paciente"];
 
                     if (!(datos.Lector["nombre"] is DBNull))
                         aux.Nombre = (string)datos.Lector["nombre"];
@@ -115,7 +109,7 @@ namespace negocio
                         aux.Apellido = (string)datos.Lector["apellido"];
 
                     if (!(datos.Lector["dni"] is DBNull))
-                        aux.DNI = (string)datos.Lector["dni"];
+                        aux.Dni = (string)datos.Lector["dni"];
 
                     if (!(datos.Lector["fecha_nacimiento"] is DBNull))
                         aux.FechaNacimiento = (DateTime)datos.Lector["fecha_nacimiento"];
@@ -132,15 +126,15 @@ namespace negocio
                     if (!(datos.Lector["activo"] is DBNull))
                         aux.Activo = (bool)datos.Lector["activo"];
 
-                    // Obra Social
+                    // Obra social desde negocio
                     if (!(datos.Lector["id_obra_social"] is DBNull))
-                        aux.ObraSocial = obraNegocio.BuscarPorId((int)datos.Lector["id_obra_social"]);
+                    {
+                        int idObra = (int)datos.Lector["id_obra_social"];
+                        aux.ObraSocial = obraNegocio.BuscarPorId(idObra);
+                    }
 
-                    // Número afiliado
                     if (!(datos.Lector["nro_afiliado"] is DBNull))
-                        aux.NumeroAfiliado = (string)datos.Lector["nro_afiliado"];
-
-                    aux.Turnos = null; // Todavía no cargamos turnos
+                        aux.NroAfiliado = (string)datos.Lector["nro_afiliado"];
 
                     return aux;
                 }
@@ -155,18 +149,31 @@ namespace negocio
 
         public void Agregar(Paciente pac)
         {
-            PersonaNegocio personaNegocio = new PersonaNegocio();
             AccesoDatos datos = new AccesoDatos();
 
             try
             {
-                int idPersona = personaNegocio.Agregar(pac);
+                datos.setearConsulta(@"
+                    INSERT INTO Paciente
+                    (nombre, apellido, dni, fecha_nacimiento, telefono, email, direccion,
+                     id_obra_social, nro_afiliado, activo)
+                    VALUES
+                    (@nom, @ape, @dni, @fec, @tel, @mail, @dir, @obra, @nro, 1)");
 
-                datos.setearConsulta("INSERT INTO Paciente (id_paciente, id_obra_social, nro_afiliado) VALUES (@id, @obra, @nro)");
+                datos.setearParametros("@nom", pac.Nombre);
+                datos.setearParametros("@ape", pac.Apellido);
+                datos.setearParametros("@dni", pac.Dni);
+                datos.setearParametros("@fec", pac.FechaNacimiento);
+                datos.setearParametros("@tel", pac.Telefono);
+                datos.setearParametros("@mail", pac.Email);
+                datos.setearParametros("@dir", pac.Direccion);
 
-                datos.setearParametros("@id", idPersona);
-                datos.setearParametros("@obra", pac.ObraSocial.Id);
-                datos.setearParametros("@nro", pac.NumeroAfiliado);
+                if (pac.ObraSocial != null)
+                    datos.setearParametros("@obra", pac.ObraSocial.IdObraSocial);
+                else
+                    datos.setearParametros("@obra", null);
+
+                datos.setearParametros("@nro", pac.NroAfiliado);
 
                 datos.ejecutarAccion();
             }
@@ -175,21 +182,42 @@ namespace negocio
                 datos.cerrarConexion();
             }
         }
+
 
         public void Modificar(Paciente pac)
         {
-            PersonaNegocio personaNegocio = new PersonaNegocio();
             AccesoDatos datos = new AccesoDatos();
 
             try
             {
-                personaNegocio.Modificar(pac);
+                datos.setearConsulta(@"
+                    UPDATE Paciente
+                    SET nombre = @nom,
+                        apellido = @ape,
+                        dni = @dni,
+                        fecha_nacimiento = @fec,
+                        telefono = @tel,
+                        email = @mail,
+                        direccion = @dir,
+                        id_obra_social = @obra,
+                        nro_afiliado = @nro
+                    WHERE id_paciente = @id");
 
-                datos.setearConsulta("UPDATE Paciente SET id_obra_social = @obra, nro_afiliado = @nro WHERE id_paciente = @id");
+                datos.setearParametros("@nom", pac.Nombre);
+                datos.setearParametros("@ape", pac.Apellido);
+                datos.setearParametros("@dni", pac.Dni);
+                datos.setearParametros("@fec", pac.FechaNacimiento);
+                datos.setearParametros("@tel", pac.Telefono);
+                datos.setearParametros("@mail", pac.Email);
+                datos.setearParametros("@dir", pac.Direccion);
 
-                datos.setearParametros("@obra", pac.ObraSocial.Id);
-                datos.setearParametros("@nro", pac.NumeroAfiliado);
-                datos.setearParametros("@id", pac.Id);
+                if (pac.ObraSocial != null)
+                    datos.setearParametros("@obra", pac.ObraSocial.IdObraSocial);
+                else
+                    datos.setearParametros("@obra", null);
+
+                datos.setearParametros("@nro", pac.NroAfiliado);
+                datos.setearParametros("@id", pac.IdPaciente);
 
                 datos.ejecutarAccion();
             }
@@ -199,11 +227,38 @@ namespace negocio
             }
         }
 
+
         public void Eliminar(int id)
         {
-            // Baja lógica se desactiva Persona 
-            PersonaNegocio personaNegocio = new PersonaNegocio();
-            personaNegocio.Eliminar(id);
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta("UPDATE Paciente SET activo = 0 WHERE id_paciente = @id");
+                datos.setearParametros("@id", id);
+                datos.ejecutarAccion();
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+
+        public void Reactivar(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta("UPDATE Paciente SET activo = 1 WHERE id_paciente = @id");
+                datos.setearParametros("@id", id);
+                datos.ejecutarAccion();
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ namespace TP_Integrador_Clinica_WEB
 {
     public partial class ListadoObrasSociales : System.Web.UI.Page
     {
-        protected GridView dgvObrasSociales; // 🛑 DECLARACIÓN para vinculación manual
+        protected GridView dgvObrasSociales; // DECLARACIÓN para vinculacion
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -42,7 +42,7 @@ namespace TP_Integrador_Clinica_WEB
                 }
                 catch (Exception ex)
                 {
-                    // Manejo de error: muestra un mensaje simple en la página o lanza la excepción
+                    // Manejo de error - muestra un mensaje simple en la pagina o lanza la excepción
                     throw ex;
                 }
             }

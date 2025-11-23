@@ -1,4 +1,5 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="ListadoObrasSociales.aspx.cs" Inherits="TP_Integrador_Clinica_WEB.ListadoObrasSociales" MasterPageFile="~/Site.Master" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="ListadoObrasSociales.aspx.cs" 
+    Inherits="TP_Integrador_Clinica_WEB.ListadoObrasSociales" MasterPageFile="~/Site.Master" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     
@@ -18,38 +19,64 @@
 
     <div class="row">
         <div class="col-md-12">
+
             <asp:GridView ID="dgvObrasSociales" runat="server" 
                 CssClass="table table-striped table-hover"
                 AutoGenerateColumns="false"
-                DataKeyNames="Id"
+                DataKeyNames="IdObraSocial"
                 OnRowCommand="dgvObrasSociales_RowCommand">
 
                 <Columns>
-                    <asp:BoundField HeaderText="ID" DataField="Id" />
-                    <asp:BoundField HeaderText="Nombre" DataField="Nombre" />
-                    <asp:BoundField HeaderText="% Cobertura" DataField="PorcentajeCobertura" />
-                    <asp:BoundField HeaderText="Teléfono" DataField="Telefono" />
-                    <asp:TemplateField HeaderText="Descuentos">
-    <ItemTemplate>
-        <asp:LinkButton ID="btnDescuentos" runat="server" CommandName="Descuentos" CommandArgument='<%# Eval("Id") %>' CssClass="btn btn-sm btn-warning">
-            Ver Descuentos
-        </asp:LinkButton>
-    </ItemTemplate>
-</asp:TemplateField>
 
-                    <%-- Columna de Acciones --%>
-                    <asp:TemplateField HeaderText="Acciones">
+                    <%-- ID --%>
+                    <asp:BoundField HeaderText="ID" DataField="IdObraSocial" />
+
+                    <%-- Nombre --%>
+                    <asp:BoundField HeaderText="Nombre" DataField="Nombre" />
+
+                    <%-- Porcentaje --%>
+                    <asp:BoundField HeaderText="% Cobertura" DataField="PorcentajeCobertura" />
+
+                    <%-- Teléfono --%>
+                    <asp:BoundField HeaderText="Teléfono" DataField="Telefono" />
+
+                    <%-- Botón de descuentos --%>
+                    <asp:TemplateField HeaderText="Descuentos">
                         <ItemTemplate>
-                            <asp:LinkButton ID="btnEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("Id") %>' CssClass="btn btn-sm btn-info me-2">
-                                <i class="fa fa-pencil-alt"></i> Editar
-                            </asp:LinkButton>
-                            <asp:LinkButton ID="btnEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("Id") %>' CssClass="btn btn-sm btn-danger" OnClientClick="return confirm('¿Está seguro de eliminar esta Obra Social?');">
-                                <i class="fa fa-trash-alt"></i> Eliminar
+                            <asp:LinkButton ID="btnDescuentos" runat="server" 
+                                CommandName="Descuentos"
+                                CommandArgument='<%# Eval("IdObraSocial") %>'
+                                CssClass="btn btn-sm btn-warning">
+                                Ver Descuentos
                             </asp:LinkButton>
                         </ItemTemplate>
                     </asp:TemplateField>
+
+                    <%-- Acciones --%>
+                    <asp:TemplateField HeaderText="Acciones">
+                        <ItemTemplate>
+
+                            <asp:LinkButton ID="btnEditar" runat="server" 
+                                CommandName="Editar"
+                                CommandArgument='<%# Eval("IdObraSocial") %>'
+                                CssClass="btn btn-sm btn-info me-2">
+                                Editar
+                            </asp:LinkButton>
+
+                            <asp:LinkButton ID="btnEliminar" runat="server"
+                                CommandName="Eliminar"
+                                CommandArgument='<%# Eval("IdObraSocial") %>'
+                                CssClass="btn btn-sm btn-danger"
+                                OnClientClick="return confirm('¿Está seguro de eliminar esta Obra Social?');">
+                                Eliminar
+                            </asp:LinkButton>
+
+                        </ItemTemplate>
+                    </asp:TemplateField>
+
                 </Columns>
             </asp:GridView>
+
         </div>
     </div>
 

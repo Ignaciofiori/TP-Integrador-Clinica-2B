@@ -1,46 +1,38 @@
-﻿using System;
+﻿using modelo;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using modelo;
 
 namespace negocio
 {
-    /// 
-    /// Funciones basicas, agregar mas si es necesario.
-    ///
-
     public class DescuentoNegocio
     {
         public List<Descuento> Listar()
         {
             List<Descuento> lista = new List<Descuento>();
             AccesoDatos datos = new AccesoDatos();
+            ObraSocialNegocio obraNegocio = new ObraSocialNegocio();
 
             try
             {
                 datos.setearConsulta(@"
-                    SELECT D.id_descuento, D.id_obra_social, D.edad_min, D.edad_max, 
-                           D.porcentaje_descuento, D.descripcion,
-                           O.nombre AS nombre_obra_social
-                    FROM Descuento D
-                    INNER JOIN ObraSocial O ON D.id_obra_social = O.id_obra_social
-                ");
+                    SELECT id_descuento, id_obra_social, edad_min, edad_max,
+                           porcentaje_descuento, descripcion, activo
+                    FROM Descuento
+                    WHERE activo = 1");
 
                 datos.ejecutarLectura();
 
                 while (datos.Lector.Read())
                 {
                     Descuento d = new Descuento();
+
                     d.Id = (int)datos.Lector["id_descuento"];
 
-                    // Cargar ObraSocial asociada
-                    d.IdObraSocial = new ObraSocial
+                    if (!(datos.Lector["id_obra_social"] is DBNull))
                     {
-                        Id = (int)datos.Lector["id_obra_social"],
-                        Nombre = datos.Lector["nombre_obra_social"] as string
-                    };
+                        int idObra = (int)datos.Lector["id_obra_social"];
+                        d.ObraSocial = obraNegocio.BuscarPorId(idObra);
+                    }
 
                     if (!(datos.Lector["edad_min"] is DBNull))
                         d.EdadMin = (int)datos.Lector["edad_min"];
@@ -54,6 +46,9 @@ namespace negocio
                     if (!(datos.Lector["descripcion"] is DBNull))
                         d.Descripcion = (string)datos.Lector["descripcion"];
 
+                    if (!(datos.Lector["activo"] is DBNull))
+                        d.Activo = (bool)datos.Lector["activo"];
+
                     lista.Add(d);
                 }
 
@@ -65,39 +60,37 @@ namespace negocio
             }
         }
 
-        public List<Descuento> ListarPorObraSocial(int idObraSocial)
+
+
+        public List<Descuento> ListarPorObraSocial(int idObra)
         {
             List<Descuento> lista = new List<Descuento>();
             AccesoDatos datos = new AccesoDatos();
+            ObraSocialNegocio obraNegocio = new ObraSocialNegocio();
 
             try
             {
                 datos.setearConsulta(@"
-            SELECT D.id_descuento, D.id_obra_social, D.edad_min, D.edad_max, 
-                   D.porcentaje_descuento, D.descripcion,
-                   O.nombre AS nombre_obra_social
-            FROM Descuento D
-            INNER JOIN ObraSocial O ON D.id_obra_social = O.id_obra_social
-            WHERE D.id_obra_social = @idObraSocial 
-        ");
+                    SELECT id_descuento, id_obra_social, edad_min, edad_max,
+                           porcentaje_descuento, descripcion, activo
+                    FROM Descuento
+                    WHERE id_obra_social = @id AND activo = 1");
 
-                // Seteamos el parámetro que filtra la consulta
-                datos.setearParametros("@idObraSocial", idObraSocial);
+                datos.setearParametros("@id", idObra);
                 datos.ejecutarLectura();
 
                 while (datos.Lector.Read())
                 {
                     Descuento d = new Descuento();
+
                     d.Id = (int)datos.Lector["id_descuento"];
 
-                    // Cargar la Obra Social (usando el modelo complejo de tu compañero)
-                    d.IdObraSocial = new ObraSocial
+                    if (!(datos.Lector["id_obra_social"] is DBNull))
                     {
-                        Id = (int)datos.Lector["id_obra_social"],
-                        Nombre = datos.Lector["nombre_obra_social"] as string
-                    };
+                        int idObraSocial = (int)datos.Lector["id_obra_social"];
+                        d.ObraSocial = obraNegocio.BuscarPorId(idObraSocial);
+                    }
 
-                    // Cargar el resto de las propiedades, manejando DBNull
                     if (!(datos.Lector["edad_min"] is DBNull))
                         d.EdadMin = (int)datos.Lector["edad_min"];
 
@@ -110,32 +103,89 @@ namespace negocio
                     if (!(datos.Lector["descripcion"] is DBNull))
                         d.Descripcion = (string)datos.Lector["descripcion"];
 
+                    if (!(datos.Lector["activo"] is DBNull))
+                        d.Activo = (bool)datos.Lector["activo"];
+
                     lista.Add(d);
                 }
 
                 return lista;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
             }
             finally
             {
                 datos.cerrarConexion();
             }
         }
+
+
+
+        public Descuento BuscarPorId(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            ObraSocialNegocio obraNegocio = new ObraSocialNegocio();
+            Descuento d = null;
+
+            try
+            {
+                datos.setearConsulta(@"
+                    SELECT id_descuento, id_obra_social, edad_min, edad_max,
+                           porcentaje_descuento, descripcion, activo
+                    FROM Descuento
+                    WHERE id_descuento = @id");
+
+                datos.setearParametros("@id", id);
+                datos.ejecutarLectura();
+
+                if (datos.Lector.Read())
+                {
+                    d = new Descuento();
+
+                    d.Id = (int)datos.Lector["id_descuento"];
+
+                    if (!(datos.Lector["id_obra_social"] is DBNull))
+                    {
+                        int idObra = (int)datos.Lector["id_obra_social"];
+                        d.ObraSocial = obraNegocio.BuscarPorId(idObra);
+                    }
+
+                    if (!(datos.Lector["edad_min"] is DBNull))
+                        d.EdadMin = (int)datos.Lector["edad_min"];
+
+                    if (!(datos.Lector["edad_max"] is DBNull))
+                        d.EdadMax = (int)datos.Lector["edad_max"];
+
+                    if (!(datos.Lector["porcentaje_descuento"] is DBNull))
+                        d.PorcentajeDescuento = (decimal)datos.Lector["porcentaje_descuento"];
+
+                    if (!(datos.Lector["descripcion"] is DBNull))
+                        d.Descripcion = (string)datos.Lector["descripcion"];
+
+                    if (!(datos.Lector["activo"] is DBNull))
+                        d.Activo = (bool)datos.Lector["activo"];
+                }
+
+                return d;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+
 
         public void Agregar(Descuento d)
         {
             AccesoDatos datos = new AccesoDatos();
+
             try
             {
                 datos.setearConsulta(@"
-                    INSERT INTO Descuento (id_obra_social, edad_min, edad_max, porcentaje_descuento, descripcion)
-                    VALUES (@obra, @min, @max, @porc, @desc)
-                ");
+                    INSERT INTO Descuento
+                    (id_obra_social, edad_min, edad_max, porcentaje_descuento, descripcion, activo)
+                    VALUES (@obra, @min, @max, @porc, @desc, 1)");
 
-                datos.setearParametros("@obra", d.IdObraSocial.Id);
+                datos.setearParametros("@obra", d.ObraSocial.IdObraSocial);
                 datos.setearParametros("@min", d.EdadMin);
                 datos.setearParametros("@max", d.EdadMax);
                 datos.setearParametros("@porc", d.PorcentajeDescuento);
@@ -149,19 +199,24 @@ namespace negocio
             }
         }
 
+
+
         public void Modificar(Descuento d)
         {
             AccesoDatos datos = new AccesoDatos();
+
             try
             {
                 datos.setearConsulta(@"
                     UPDATE Descuento
-                    SET id_obra_social = @obra, edad_min = @min, edad_max = @max,
-                        porcentaje_descuento = @porc, descripcion = @desc
-                    WHERE id_descuento = @id
-                ");
+                    SET id_obra_social = @obra,
+                        edad_min = @min,
+                        edad_max = @max,
+                        porcentaje_descuento = @porc,
+                        descripcion = @desc
+                    WHERE id_descuento = @id");
 
-                datos.setearParametros("@obra", d.IdObraSocial.Id);
+                datos.setearParametros("@obra", d.ObraSocial.IdObraSocial);
                 datos.setearParametros("@min", d.EdadMin);
                 datos.setearParametros("@max", d.EdadMax);
                 datos.setearParametros("@porc", d.PorcentajeDescuento);
@@ -176,12 +231,15 @@ namespace negocio
             }
         }
 
+
+
         public void Eliminar(int id)
         {
             AccesoDatos datos = new AccesoDatos();
+
             try
             {
-                datos.setearConsulta("DELETE FROM Descuento WHERE id_descuento = @id");
+                datos.setearConsulta("UPDATE Descuento SET activo = 0 WHERE id_descuento = @id");
                 datos.setearParametros("@id", id);
                 datos.ejecutarAccion();
             }
@@ -190,6 +248,24 @@ namespace negocio
                 datos.cerrarConexion();
             }
         }
+
+
+
+        public void Reactivar(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta("UPDATE Descuento SET activo = 1 WHERE id_descuento = @id");
+                datos.setearParametros("@id", id);
+                datos.ejecutarAccion();
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }        }
+
+
     }
 }
-

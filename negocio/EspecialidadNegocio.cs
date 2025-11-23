@@ -1,6 +1,6 @@
-﻿using modelo;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using modelo;
 
 namespace negocio
 {
@@ -13,15 +13,18 @@ namespace negocio
 
             try
             {
-                datos.setearConsulta("SELECT id_especialidad, nombre, descripcion FROM Especialidad");
+                datos.setearConsulta(@"
+                    SELECT id_especialidad, nombre, descripcion, activo
+                    FROM Especialidad
+                    WHERE activo = 1");
+
                 datos.ejecutarLectura();
 
                 while (datos.Lector.Read())
                 {
                     Especialidad esp = new Especialidad();
 
-                    // ID (no hace falta validar porque es PK NOT NULL)
-                    esp.Id = (int)datos.Lector["id_especialidad"];
+                    esp.IdEspecialidad = (int)datos.Lector["id_especialidad"];
 
                     if (!(datos.Lector["nombre"] is DBNull))
                         esp.Nombre = (string)datos.Lector["nombre"];
@@ -29,14 +32,13 @@ namespace negocio
                     if (!(datos.Lector["descripcion"] is DBNull))
                         esp.Descripcion = (string)datos.Lector["descripcion"];
 
+                    if (!(datos.Lector["activo"] is DBNull))
+                        esp.Activo = (bool)datos.Lector["activo"];
+
                     lista.Add(esp);
                 }
 
                 return lista;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
             }
             finally
             {
@@ -44,45 +46,7 @@ namespace negocio
             }
         }
 
-        public List<Especialidad> ListarEspecialidadPorProfesional(int idProfesional)
-            {
-                List<Especialidad> lista = new List<Especialidad>();
-                AccesoDatos datos = new AccesoDatos();
 
-                try
-                {
-                    datos.setearConsulta(@"
-                    SELECT e.id_especialidad, e.nombre, e.descripcion
-                    FROM Profesional_Especialidad pe
-                    INNER JOIN Especialidad e ON pe.id_especialidad = e.id_especialidad
-                    WHERE pe.id_profesional = @id
-                ");
-
-                    datos.setearParametros("@id", idProfesional);
-                    datos.ejecutarLectura();
-
-                    while (datos.Lector.Read())
-                    {
-                        Especialidad aux = new Especialidad();
-
-                        aux.Id = (int)datos.Lector["id_especialidad"];
-
-                        if (!(datos.Lector["nombre"] is DBNull))
-                            aux.Nombre = (string)datos.Lector["nombre"];
-
-                        if (!(datos.Lector["descripcion"] is DBNull))
-                            aux.Descripcion = (string)datos.Lector["descripcion"];
-
-                        lista.Add(aux);
-                    }
-
-                    return lista;
-                }
-                finally
-                {
-                    datos.cerrarConexion();
-                }
-            }
 
         public Especialidad BuscarPorId(int id)
         {
@@ -92,9 +56,9 @@ namespace negocio
             try
             {
                 datos.setearConsulta(@"
-            SELECT id_especialidad, nombre, descripcion
-            FROM Especialidad
-            WHERE id_especialidad = @id");
+                    SELECT id_especialidad, nombre, descripcion, activo
+                    FROM Especialidad
+                    WHERE id_especialidad = @id AND activo = 1");
 
                 datos.setearParametros("@id", id);
                 datos.ejecutarLectura();
@@ -103,13 +67,16 @@ namespace negocio
                 {
                     aux = new Especialidad();
 
-                    aux.Id = (int)datos.Lector["id_especialidad"];
+                    aux.IdEspecialidad = (int)datos.Lector["id_especialidad"];
 
                     if (!(datos.Lector["nombre"] is DBNull))
                         aux.Nombre = (string)datos.Lector["nombre"];
 
                     if (!(datos.Lector["descripcion"] is DBNull))
                         aux.Descripcion = (string)datos.Lector["descripcion"];
+
+                    if (!(datos.Lector["activo"] is DBNull))
+                        aux.Activo = (bool)datos.Lector["activo"];
                 }
 
                 return aux;
@@ -121,20 +88,21 @@ namespace negocio
         }
 
 
+
         public void Agregar(Especialidad esp)
         {
             AccesoDatos datos = new AccesoDatos();
 
             try
             {
-                datos.setearConsulta("INSERT INTO Especialidad (nombre, descripcion) VALUES (@nombre, @descripcion)");
-                datos.setearParametros("@nombre", esp.Nombre);
-                datos.setearParametros("@descripcion", esp.Descripcion);
+                datos.setearConsulta(@"
+                    INSERT INTO Especialidad (nombre, descripcion, activo)
+                    VALUES (@nom, @desc, 1)");
+
+                datos.setearParametros("@nom", esp.Nombre);
+                datos.setearParametros("@desc", esp.Descripcion);
+
                 datos.ejecutarAccion();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
             }
             finally
             {
@@ -142,16 +110,80 @@ namespace negocio
             }
         }
 
-        public void AgregarEspecialidadAProfesional(int idProfesional, int idEspecialidad, decimal valorConsulta)
+
+
+        public void Modificar(Especialidad esp)
         {
             AccesoDatos datos = new AccesoDatos();
 
             try
             {
                 datos.setearConsulta(@"
-            INSERT INTO Profesional_Especialidad (id_profesional, id_especialidad, valor_consulta)
-            VALUES (@prof, @esp, @valor)
-        ");
+                    UPDATE Especialidad
+                    SET nombre = @nom,
+                        descripcion = @desc
+                    WHERE id_especialidad = @id");
+
+                datos.setearParametros("@nom", esp.Nombre);
+                datos.setearParametros("@desc", esp.Descripcion);
+                datos.setearParametros("@id", esp.IdEspecialidad);
+
+                datos.ejecutarAccion();
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+
+
+        public void Eliminar(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                // Baja logica
+                datos.setearConsulta("UPDATE Especialidad SET activo = 0 WHERE id_especialidad = @id");
+                datos.setearParametros("@id", id);
+                datos.ejecutarAccion();
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+
+
+        public void Reactivar(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta("UPDATE Especialidad SET activo = 1 WHERE id_especialidad = @id");
+                datos.setearParametros("@id", id);
+                datos.ejecutarAccion();
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+
+        public void AgregarRelacion(int idProfesional, int idEspecialidad, decimal valorConsulta)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta(@"
+            INSERT INTO Profesional_Especialidad
+            (id_profesional, id_especialidad, valor_consulta, activo)
+            VALUES (@prof, @esp, @valor, 1)");
 
                 datos.setearParametros("@prof", idProfesional);
                 datos.setearParametros("@esp", idEspecialidad);
@@ -165,27 +197,6 @@ namespace negocio
             }
         }
 
-        public void Modificar(Especialidad esp)
-        {
-            AccesoDatos datos = new AccesoDatos();
-
-            try
-            {
-                datos.setearConsulta("UPDATE Especialidad SET nombre = @nombre, descripcion = @descripcion WHERE id_especialidad = @id");
-                datos.setearParametros("@nombre", esp.Nombre);
-                datos.setearParametros("@descripcion", esp.Descripcion);
-                datos.setearParametros("@id", esp.Id);
-                datos.ejecutarAccion();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                datos.cerrarConexion();
-            }
-        }
 
         public void ModificarValorConsulta(int idProfesional, int idEspecialidad, decimal nuevoValor)
         {
@@ -196,8 +207,7 @@ namespace negocio
                 datos.setearConsulta(@"
             UPDATE Profesional_Especialidad
             SET valor_consulta = @valor
-            WHERE id_profesional = @prof AND id_especialidad = @esp
-        ");
+            WHERE id_profesional = @prof AND id_especialidad = @esp AND activo = 1");
 
                 datos.setearParametros("@valor", nuevoValor);
                 datos.setearParametros("@prof", idProfesional);
@@ -212,19 +222,21 @@ namespace negocio
         }
 
 
-        public void Eliminar(int id)
+        public void BajaLogicaRelacion(int idProfesional, int idEspecialidad)
         {
             AccesoDatos datos = new AccesoDatos();
 
             try
             {
-                datos.setearConsulta("DELETE FROM Especialidad WHERE id_especialidad = @id");
-                datos.setearParametros("@id", id);
+                datos.setearConsulta(@"
+            UPDATE Profesional_Especialidad
+            SET activo = 0
+            WHERE id_profesional = @prof AND id_especialidad = @esp");
+
+                datos.setearParametros("@prof", idProfesional);
+                datos.setearParametros("@esp", idEspecialidad);
+
                 datos.ejecutarAccion();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
             }
             finally
             {
@@ -232,16 +244,17 @@ namespace negocio
             }
         }
 
-        public void EliminarEspecialidadDeProfesional(int idProfesional, int idEspecialidad)
+
+        public void ReactivarRelacion(int idProfesional, int idEspecialidad)
         {
             AccesoDatos datos = new AccesoDatos();
 
             try
             {
                 datos.setearConsulta(@"
-            DELETE FROM Profesional_Especialidad
-            WHERE id_profesional = @prof AND id_especialidad = @esp
-        ");
+            UPDATE Profesional_Especialidad
+            SET activo = 1
+            WHERE id_profesional = @prof AND id_especialidad = @esp");
 
                 datos.setearParametros("@prof", idProfesional);
                 datos.setearParametros("@esp", idEspecialidad);

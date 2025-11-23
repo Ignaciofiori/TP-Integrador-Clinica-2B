@@ -22,6 +22,7 @@ namespace TP_Integrador_Clinica_WEB
         // Necesario para la función de BuscarPorId en edición
         public Descuento BuscarPorId(int id)
         {
+            ObraSocialNegocio obraNegocio = new ObraSocialNegocio();
             AccesoDatos datos = new AccesoDatos();
             Descuento d = null;
             try
@@ -38,8 +39,8 @@ namespace TP_Integrador_Clinica_WEB
                     d = new Descuento();
                     d.Id = (int)datos.Lector["id_descuento"];
 
-                    // Solo cargamos el ID de la Obra Social para el HiddenField
-                    d.IdObraSocial = new ObraSocial { Id = (int)datos.Lector["id_obra_social"] };
+                    
+                    d.ObraSocial = obraNegocio.BuscarPorId((int)datos.Lector["id_obra_social"] );
 
                     if (!(datos.Lector["edad_min"] is DBNull)) d.EdadMin = (int)datos.Lector["edad_min"];
                     if (!(datos.Lector["edad_max"] is DBNull)) d.EdadMax = (int)datos.Lector["edad_max"];
@@ -86,7 +87,7 @@ namespace TP_Integrador_Clinica_WEB
                     {
                         lblTitulo.Text = "Modificar Descuento";
                         hfIdDescuento.Value = idDescuento.ToString();
-                        hfIdObraSocial.Value = descuento.IdObraSocial.Id.ToString(); // Sobreescribimos con el ID real
+                        hfIdObraSocial.Value = descuento.ObraSocial.IdObraSocial.ToString(); // Sobreescribimos con el ID real
 
                         txtDescripcion.Text = descuento.Descripcion;
                         txtPorcentaje.Text = descuento.PorcentajeDescuento.ToString();
@@ -122,10 +123,11 @@ namespace TP_Integrador_Clinica_WEB
                 d.EdadMax = int.Parse(txtEdadMax.Text);
 
                 // 2. Cargar el objeto ObraSocial solo con el ID (necesario para el método Agregar/Modificar)
-                d.IdObraSocial = new ObraSocial
+                d.ObraSocial = new ObraSocial
                 {
-                    Id = int.Parse(hfIdObraSocial.Value)
+                    IdObraSocial = int.Parse(hfIdObraSocial.Value)
                 };
+
 
                 // 3. Determinar si es Alta o Modificación
                 if (!string.IsNullOrEmpty(hfIdDescuento.Value))

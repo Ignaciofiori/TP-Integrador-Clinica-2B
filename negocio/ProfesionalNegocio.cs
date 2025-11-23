@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using modelo;
-
 
 namespace negocio
 {
@@ -16,19 +11,13 @@ namespace negocio
             List<Profesional> lista = new List<Profesional>();
             AccesoDatos datos = new AccesoDatos();
 
-            // NEGOCIOS RELACIONADOS
-            EspecialidadNegocio especialidadNegocio = new EspecialidadNegocio();
-            ObraSocialNegocio obraSocialNegocio = new ObraSocialNegocio();
-
             try
             {
                 datos.setearConsulta(@"
-                    SELECT p.id_persona, p.nombre, p.apellido, p.dni, p.fecha_nacimiento,
-                           p.telefono, p.email, p.direccion, p.activo,
-                           pr.matricula
-                    FROM Persona p
-                    INNER JOIN Profesional pr ON p.id_persona = pr.id_profesional
-                ");
+                    SELECT id_profesional, nombre, apellido, dni,
+                           matricula, telefono, email, activo
+                    FROM Profesional
+                    WHERE activo = 1");
 
                 datos.ejecutarLectura();
 
@@ -36,7 +25,7 @@ namespace negocio
                 {
                     Profesional aux = new Profesional();
 
-                    aux.Id = (int)datos.Lector["id_persona"];
+                    aux.IdProfesional = (int)datos.Lector["id_profesional"];
 
                     if (!(datos.Lector["nombre"] is DBNull))
                         aux.Nombre = (string)datos.Lector["nombre"];
@@ -45,10 +34,10 @@ namespace negocio
                         aux.Apellido = (string)datos.Lector["apellido"];
 
                     if (!(datos.Lector["dni"] is DBNull))
-                        aux.DNI = (string)datos.Lector["dni"];
+                        aux.Dni = (string)datos.Lector["dni"];
 
-                    if (!(datos.Lector["fecha_nacimiento"] is DBNull))
-                        aux.FechaNacimiento = (DateTime)datos.Lector["fecha_nacimiento"];
+                    if (!(datos.Lector["matricula"] is DBNull))
+                        aux.Matricula = (string)datos.Lector["matricula"];
 
                     if (!(datos.Lector["telefono"] is DBNull))
                         aux.Telefono = (string)datos.Lector["telefono"];
@@ -56,20 +45,8 @@ namespace negocio
                     if (!(datos.Lector["email"] is DBNull))
                         aux.Email = (string)datos.Lector["email"];
 
-                    if (!(datos.Lector["direccion"] is DBNull))
-                        aux.Direccion = (string)datos.Lector["direccion"];
-
                     if (!(datos.Lector["activo"] is DBNull))
                         aux.Activo = (bool)datos.Lector["activo"];
-
-                    if (!(datos.Lector["matricula"] is DBNull))
-                        aux.Matricula = (string)datos.Lector["matricula"];
-
-                  
-                    aux.Especialidades = especialidadNegocio.ListarEspecialidadPorProfesional(aux.Id);
-
-                
-                    aux.ObrasSociales = obraSocialNegocio.ListarPorProfesional(aux.Id);
 
                     lista.Add(aux);
                 }
@@ -81,7 +58,8 @@ namespace negocio
                 datos.cerrarConexion();
             }
         }
-    
+
+
         public Profesional BuscarPorId(int id)
         {
             AccesoDatos datos = new AccesoDatos();
@@ -89,12 +67,10 @@ namespace negocio
             try
             {
                 datos.setearConsulta(@"
-            SELECT p.id_persona, p.nombre, p.apellido, p.dni, p.fecha_nacimiento,
-                   p.telefono, p.email, p.direccion, p.activo,
-                   pr.matricula
-            FROM Persona p
-            INNER JOIN Profesional pr ON p.id_persona = pr.id_profesional
-            WHERE p.id_persona = @id");
+                    SELECT id_profesional, nombre, apellido, dni,
+                           matricula, telefono, email, activo
+                    FROM Profesional
+                    WHERE id_profesional = @id AND activo = 1");
 
                 datos.setearParametros("@id", id);
                 datos.ejecutarLectura();
@@ -103,7 +79,7 @@ namespace negocio
                 {
                     Profesional aux = new Profesional();
 
-                    aux.Id = (int)datos.Lector["id_persona"];
+                    aux.IdProfesional = (int)datos.Lector["id_profesional"];
 
                     if (!(datos.Lector["nombre"] is DBNull))
                         aux.Nombre = (string)datos.Lector["nombre"];
@@ -112,10 +88,10 @@ namespace negocio
                         aux.Apellido = (string)datos.Lector["apellido"];
 
                     if (!(datos.Lector["dni"] is DBNull))
-                        aux.DNI = (string)datos.Lector["dni"];
+                        aux.Dni = (string)datos.Lector["dni"];
 
-                    if (!(datos.Lector["fecha_nacimiento"] is DBNull))
-                        aux.FechaNacimiento = (DateTime)datos.Lector["fecha_nacimiento"];
+                    if (!(datos.Lector["matricula"] is DBNull))
+                        aux.Matricula = (string)datos.Lector["matricula"];
 
                     if (!(datos.Lector["telefono"] is DBNull))
                         aux.Telefono = (string)datos.Lector["telefono"];
@@ -123,16 +99,8 @@ namespace negocio
                     if (!(datos.Lector["email"] is DBNull))
                         aux.Email = (string)datos.Lector["email"];
 
-                    if (!(datos.Lector["direccion"] is DBNull))
-                        aux.Direccion = (string)datos.Lector["direccion"];
-
                     if (!(datos.Lector["activo"] is DBNull))
                         aux.Activo = (bool)datos.Lector["activo"];
-
-                    if (!(datos.Lector["matricula"] is DBNull))
-                        aux.Matricula = (string)datos.Lector["matricula"];
-
-                    aux.Especialidades = null; // Se cargará luego desde Profesional_EspecialidadNegocio
 
                     return aux;
                 }
@@ -145,21 +113,25 @@ namespace negocio
             }
         }
 
+
         public void Agregar(Profesional prof)
         {
-            PersonaNegocio personaNegocio = new PersonaNegocio();
             AccesoDatos datos = new AccesoDatos();
 
             try
             {
-                // 1) Insert Persona y obtener ID
-                int idPersona = personaNegocio.Agregar(prof);
+                datos.setearConsulta(@"
+                    INSERT INTO Profesional
+                    (nombre, apellido, dni, matricula, telefono, email, activo)
+                    VALUES
+                    (@nom, @ape, @dni, @mat, @tel, @mail, 1)");
 
-                // 2) Insert Profesional con ese ID
-                datos.setearConsulta("INSERT INTO Profesional (id_profesional, matricula) VALUES (@id, @matricula)");
-
-                datos.setearParametros("@id", idPersona);
-                datos.setearParametros("@matricula", prof.Matricula);
+                datos.setearParametros("@nom", prof.Nombre);
+                datos.setearParametros("@ape", prof.Apellido);
+                datos.setearParametros("@dni", prof.Dni);
+                datos.setearParametros("@mat", prof.Matricula);
+                datos.setearParametros("@tel", prof.Telefono);
+                datos.setearParametros("@mail", prof.Email);
 
                 datos.ejecutarAccion();
             }
@@ -172,19 +144,27 @@ namespace negocio
 
         public void Modificar(Profesional prof)
         {
-            PersonaNegocio personaNegocio = new PersonaNegocio();
             AccesoDatos datos = new AccesoDatos();
 
             try
             {
-                // 1) Modificar Persona
-                personaNegocio.Modificar(prof);
+                datos.setearConsulta(@"
+                    UPDATE Profesional
+                    SET nombre = @nom,
+                        apellido = @ape,
+                        dni = @dni,
+                        matricula = @mat,
+                        telefono = @tel,
+                        email = @mail
+                    WHERE id_profesional = @id");
 
-                // 2) Modificar Profesional
-                datos.setearConsulta("UPDATE Profesional SET matricula = @matricula WHERE id_profesional = @id");
-
-                datos.setearParametros("@matricula", prof.Matricula);
-                datos.setearParametros("@id", prof.Id);
+                datos.setearParametros("@nom", prof.Nombre);
+                datos.setearParametros("@ape", prof.Apellido);
+                datos.setearParametros("@dni", prof.Dni);
+                datos.setearParametros("@mat", prof.Matricula);
+                datos.setearParametros("@tel", prof.Telefono);
+                datos.setearParametros("@mail", prof.Email);
+                datos.setearParametros("@id", prof.IdProfesional);
 
                 datos.ejecutarAccion();
             }
@@ -197,9 +177,35 @@ namespace negocio
 
         public void Eliminar(int id)
         {
-            // Igual que Paciente: baja lógica en Persona
-            PersonaNegocio personaNegocio = new PersonaNegocio();
-            personaNegocio.Eliminar(id);
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta("UPDATE Profesional SET activo = 0 WHERE id_profesional = @id");
+                datos.setearParametros("@id", id);
+                datos.ejecutarAccion();
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+
+        public void Reactivar(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta("UPDATE Profesional SET activo = 1 WHERE id_profesional = @id");
+                datos.setearParametros("@id", id);
+                datos.ejecutarAccion();
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
         }
     }
 }

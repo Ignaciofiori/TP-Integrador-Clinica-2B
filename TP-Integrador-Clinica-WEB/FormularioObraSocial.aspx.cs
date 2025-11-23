@@ -66,7 +66,7 @@ namespace TP_Integrador_Clinica_WEB
                 if (!string.IsNullOrEmpty(hfIdObraSocial.Value))
                 {
                     // Modificación
-                    nuevaObra.Id = int.Parse(hfIdObraSocial.Value);
+                    nuevaObra.IdObraSocial = int.Parse(hfIdObraSocial.Value);
                     negocio.Modificar(nuevaObra);
                 }
                 else
