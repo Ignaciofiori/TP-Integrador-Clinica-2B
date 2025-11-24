@@ -208,5 +208,101 @@ namespace negocio
             }
         }
 
+        public List<Profesional> Buscar(string criterio, string filtro)
+        {
+            List<Profesional> lista = new List<Profesional>();
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                string consulta =
+                    "SELECT id_profesional, nombre, apellido, dni, telefono, email, matricula " +
+                    "FROM Profesional " +
+                    "WHERE activo = 1 AND ";
+
+                switch (criterio)
+                {
+                    case "Nombre":
+                        consulta += "nombre LIKE @filtro";
+                        break;
+
+                    case "Apellido":
+                        consulta += "apellido LIKE @filtro";
+                        break;
+
+                    case "Dni":
+                        consulta += "dni LIKE @filtro";
+                        break;
+
+                    case "Telefono":
+                        consulta += "telefono LIKE @filtro";
+                        break;
+
+                    case "Email":
+                        consulta += "email LIKE @filtro";
+                        break;
+
+                    case "Matricula":
+                        consulta += "matricula LIKE @filtro";
+                        break;
+
+                    case "Especialidad":
+                        consulta =
+                            "SELECT P.id_profesional, P.nombre, P.apellido, P.dni, P.telefono, P.email, P.matricula " +
+                            "FROM Profesional P " +
+                            "INNER JOIN Profesional_Especialidad PE ON P.id_profesional = PE.id_profesional " +
+                            "INNER JOIN Especialidad E ON E.id_especialidad = PE.id_especialidad " +
+                            "WHERE P.activo = 1 AND E.nombre LIKE @filtro";
+                        break;
+
+                    case "ObraSocial":
+                        consulta =
+                            "SELECT P.id_profesional, P.nombre, P.apellido, P.dni, P.telefono, P.email, P.matricula " +
+                            "FROM Profesional P " +
+                            "INNER JOIN Profesional_ObraSocial PO ON P.id_profesional = PO.id_profesional " +
+                            "INNER JOIN ObraSocial O ON O.id_obra_social = PO.id_obra_social " +
+                            "WHERE P.activo = 1 AND O.nombre LIKE @filtro";
+                        break;
+                }
+
+                datos.setearConsulta(consulta);
+                datos.setearParametros("@filtro", "%" + filtro + "%");
+                datos.ejecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    Profesional aux = new Profesional();
+
+                    if (!(datos.Lector["id_profesional"] is DBNull))
+                        aux.IdProfesional = (int)datos.Lector["id_profesional"];
+
+                    if (!(datos.Lector["nombre"] is DBNull))
+                        aux.Nombre = (string)datos.Lector["nombre"];
+
+                    if (!(datos.Lector["apellido"] is DBNull))
+                        aux.Apellido = (string)datos.Lector["apellido"];
+
+                    if (!(datos.Lector["dni"] is DBNull))
+                        aux.Dni = (string)datos.Lector["dni"];
+
+                    if (!(datos.Lector["telefono"] is DBNull))
+                        aux.Telefono = (string)datos.Lector["telefono"];
+
+                    if (!(datos.Lector["email"] is DBNull))
+                        aux.Email = (string)datos.Lector["email"];
+
+                    if (!(datos.Lector["matricula"] is DBNull))
+                        aux.Matricula = (string)datos.Lector["matricula"];
+
+                    lista.Add(aux);
+                }
+
+                return lista;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
     }
 }

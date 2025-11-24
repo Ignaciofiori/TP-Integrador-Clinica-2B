@@ -204,7 +204,8 @@ namespace negocio
                            pos.convenio_activo, pos.fecha_inicio
                     FROM Profesional_ObraSocial pos
                     INNER JOIN ObraSocial o ON pos.id_obra_social = o.id_obra_social
-                    WHERE pos.id_profesional = @id AND pos.activo = 1");
+                    WHERE pos.id_profesional = @id AND pos.activo = 1
+                    AND o.activo = 1");
 
                 datos.setearParametros("@id", idProfesional);
                 datos.ejecutarLectura();
@@ -256,16 +257,16 @@ namespace negocio
         }
 
 
-        public void BajaLogicaRelacion(int idProfesional, int idObraSocial)
+        public void BajaFisicaRelacion(int idProfesional, int idObraSocial)
         {
             AccesoDatos datos = new AccesoDatos();
 
             try
             {
                 datos.setearConsulta(@"
-                    UPDATE Profesional_ObraSocial
-                    SET activo = 0
-                    WHERE id_profesional = @prof AND id_obra_social = @obra");
+            DELETE FROM Profesional_ObraSocial
+            WHERE id_profesional = @prof
+              AND id_obra_social = @obra");
 
                 datos.setearParametros("@prof", idProfesional);
                 datos.setearParametros("@obra", idObraSocial);
@@ -277,8 +278,6 @@ namespace negocio
                 datos.cerrarConexion();
             }
         }
-
-
 
         public void ReactivarRelacion(int idProfesional, int idObraSocial)
         {
@@ -300,6 +299,23 @@ namespace negocio
             {
                 datos.cerrarConexion();
             }
+        }
+
+        public bool ExisteRelacionActiva(int idProf, int idObra)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            datos.setearConsulta(@"
+        SELECT 1
+        FROM Profesional_ObraSocial
+        WHERE id_profesional = @prof AND id_obra_social = @obra AND activo = 1");
+
+            datos.setearParametros("@prof", idProf);
+            datos.setearParametros("@obra", idObra);
+
+            datos.ejecutarLectura();
+
+            return datos.Lector.Read();
         }
 
 

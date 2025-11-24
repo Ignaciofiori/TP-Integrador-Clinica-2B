@@ -136,7 +136,46 @@ namespace negocio
             }
         }
 
+        public List<Especialidad> ListarPorProfesional(int idProfesional)
+        {
+            List<Especialidad> lista = new List<Especialidad>();
+            AccesoDatos datos = new AccesoDatos();
 
+            try
+            {
+                datos.setearConsulta(@"
+            SELECT 
+                E.id_especialidad, 
+                E.nombre, 
+                E.descripcion,
+                PE.valor_consulta
+            FROM Profesional_Especialidad PE
+            INNER JOIN Especialidad E ON PE.id_especialidad = E.id_especialidad
+            WHERE PE.id_profesional = @id AND PE.activo = 1
+            AND E.activo = 1");
+
+                datos.setearParametros("@id", idProfesional);
+                datos.ejecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    Especialidad esp = new Especialidad();
+
+                    esp.IdEspecialidad = (int)datos.Lector["id_especialidad"];
+                    esp.Nombre = datos.Lector["nombre"].ToString();
+                    esp.Descripcion = datos.Lector["descripcion"].ToString();
+                    esp.ValorConsulta = decimal.Parse(datos.Lector["valor_consulta"].ToString());
+
+                    lista.Add(esp);
+                }
+
+                return lista;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
 
         public void Eliminar(int id)
         {
@@ -222,15 +261,14 @@ namespace negocio
         }
 
 
-        public void BajaLogicaRelacion(int idProfesional, int idEspecialidad)
+        public void BajaFisicaRelacion(int idProfesional, int idEspecialidad)
         {
             AccesoDatos datos = new AccesoDatos();
 
             try
             {
                 datos.setearConsulta(@"
-            UPDATE Profesional_Especialidad
-            SET activo = 0
+            DELETE FROM Profesional_Especialidad
             WHERE id_profesional = @prof AND id_especialidad = @esp");
 
                 datos.setearParametros("@prof", idProfesional);
@@ -267,5 +305,28 @@ namespace negocio
             }
         }
 
+
+        public bool ExisteRelacionActiva(int idProfesional, int idEspecialidad)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta(@"
+            SELECT 1 
+            FROM Profesional_Especialidad
+            WHERE id_profesional = @prof AND id_especialidad = @esp AND activo = 1");
+
+                datos.setearParametros("@prof", idProfesional);
+                datos.setearParametros("@esp", idEspecialidad);
+                datos.ejecutarLectura();
+
+                return datos.Lector.Read(); // Si hay fila → existe
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
     }
 }
