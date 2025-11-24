@@ -2,6 +2,7 @@
 using negocio;
 
 using System;
+using System.Web.UI.WebControls;
 
 namespace TP_Integrador_Clinica_WEB
 {
@@ -90,12 +91,28 @@ namespace TP_Integrador_Clinica_WEB
         }
         protected void btnAgregar_Click(object sender, EventArgs e)
         {
-            // más adelante va: Response.Redirect("PacienteFormulario.aspx");
+             Response.Redirect("FormularioPaciente.aspx");
         }
 
-        protected void gvPacientes_RowCommand(object sender, System.Web.UI.WebControls.GridViewCommandEventArgs e)
+        protected void gvPacientes_RowCommand(object sender, GridViewCommandEventArgs e)
         {
-            // Lo vas a usar más adelante para manejar eliminar, si querés
+            // índice de la fila clickeada
+            int index = Convert.ToInt32(e.CommandArgument);
+
+            // obtener ID del paciente desde la grilla
+            GridViewRow fila = gvPacientes.Rows[index];
+            int idPaciente = int.Parse(fila.Cells[0].Text);
+
+            if (e.CommandName == "Editar")
+            {
+                Response.Redirect("FormularioPaciente.aspx?id=" + idPaciente);
+            }
+            else if (e.CommandName == "Eliminar")
+            {
+                PacienteNegocio negocio = new PacienteNegocio();
+                negocio.Eliminar(idPaciente); // baja lógica
+                CargarPacientes();
+            }
         }
     }
 }

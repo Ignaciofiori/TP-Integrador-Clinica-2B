@@ -65,7 +65,7 @@
         ID="gvPacientes" 
         runat="server" 
         AutoGenerateColumns="False"
-        CssClass="table table-striped table-bordered"
+         CssClass="table table-striped table-hover"
         OnRowCommand="gvPacientes_RowCommand">
 
         <Columns>
@@ -85,13 +85,21 @@
                 Text="Editar"
                 ControlStyle-CssClass="btn btn-info btn-sm"
                 DataNavigateUrlFields="IdPaciente"
-                DataNavigateUrlFormatString="PacienteFormulario.aspx?id={0}" />
+                DataNavigateUrlFormatString="FormularioPaciente.aspx?id={0}" />
 
             <%-- ELIMINAR --%>
-            <asp:ButtonField
-                Text="Eliminar"
-                CommandName="Eliminar"
-                ControlStyle-CssClass="btn btn-danger btn-sm" />
+          <asp:TemplateField HeaderText="Eliminar">
+            <ItemTemplate>
+                <asp:LinkButton
+                    ID="btnEliminar"
+                    runat="server"
+                    Text="Eliminar"
+                    CssClass="btn btn-danger btn-sm"
+                    CommandName="Eliminar"
+                    CommandArgument="<%# Container.DataItemIndex %>"
+                    OnClientClick="return confirm('¿Seguro que querés eliminar este paciente?');" />
+            </ItemTemplate>
+        </asp:TemplateField>
 
         </Columns>
 

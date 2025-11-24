@@ -10,7 +10,7 @@
         OnClick="btnNuevaEspecialidad_Click" CssClass="btn btn-primary mb-3" />
     
     <asp:GridView ID="gvEspecialidades" runat="server"
-        CssClass="table table-striped table-bordered"
+        CssClass="table table-striped table-hover"
         AutoGenerateColumns="false"
         DataKeyNames="IdEspecialidad"
         OnRowEditing="gvEspecialidades_RowEditing"

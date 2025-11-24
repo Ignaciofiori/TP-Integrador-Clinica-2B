@@ -37,6 +37,9 @@
                     <%-- Porcentaje --%>
                     <asp:BoundField HeaderText="% Cobertura" DataField="PorcentajeCobertura" />
 
+                    <%-- Direccion --%>
+                    <asp:BoundField HeaderText="Direccion" DataField="Direccion" />
+
                     <%-- Teléfono --%>
                     <asp:BoundField HeaderText="Teléfono" DataField="Telefono" />
 

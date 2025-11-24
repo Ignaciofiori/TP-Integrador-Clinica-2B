@@ -117,6 +117,7 @@
     <Content Include="FormularioDescuento.aspx" />
     <Content Include="FormularioEspecialidad.aspx" />
     <Content Include="FormularioObraSocial.aspx" />
+    <Content Include="FormularioPaciente.aspx" />
     <Content Include="Global.asax" />
     <Content Include="ListadoDescuentos.aspx" />
     <Content Include="ListadoEspecialidades.aspx" />
@@ -195,6 +196,13 @@
     <Compile Include="FormularioObraSocial.aspx.cs">
       <DependentUpon>FormularioObraSocial.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="FormularioPaciente.aspx.cs">
+      <DependentUpon>FormularioPaciente.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="FormularioPaciente.aspx.designer.cs">
+      <DependentUpon>FormularioPaciente.aspx</DependentUpon>
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

@@ -1,98 +1,109 @@
-﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="TP_Integrador_Clinica_WEB.SiteMaster" %>
+﻿    <%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="TP_Integrador_Clinica_WEB.SiteMaster" %>
 
-<!DOCTYPE html>
+    <!DOCTYPE html>
 
-<html lang="en">
-<head runat="server">
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%: Page.Title %> - SaludYa! </title>
+    <html lang="en">
+    <head runat="server">
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title><%: Page.Title %> - SaludYa! </title>
 
-    <asp:PlaceHolder runat="server">
-        <%: Scripts.Render("~/bundles/modernizr") %>
-    </asp:PlaceHolder>
+        <asp:PlaceHolder runat="server">
+            <%: Scripts.Render("~/bundles/modernizr") %>
+        </asp:PlaceHolder>
 
-    <webopt:bundlereference runat="server" path="~/Content/css" />
-    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+        <webopt:bundlereference runat="server" path="~/Content/css" />
+        <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
 
-</head>
-<body>
-    <form runat="server">
-        <asp:ScriptManager runat="server">
-            <Scripts>
-                <%--To learn more about bundling scripts in ScriptManager see https://go.microsoft.com/fwlink/?LinkID=301884 --%>
-                <%--Framework Scripts--%>
-                <asp:ScriptReference Name="MsAjaxBundle" />
-                <asp:ScriptReference Name="jquery" />
-                <asp:ScriptReference Name="WebForms.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebForms.js" />
-                <asp:ScriptReference Name="WebUIValidation.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebUIValidation.js" />
-                <asp:ScriptReference Name="MenuStandards.js" Assembly="System.Web" Path="~/Scripts/WebForms/MenuStandards.js" />
-                <asp:ScriptReference Name="GridView.js" Assembly="System.Web" Path="~/Scripts/WebForms/GridView.js" />
-                <asp:ScriptReference Name="DetailsView.js" Assembly="System.Web" Path="~/Scripts/WebForms/DetailsView.js" />
-                <asp:ScriptReference Name="TreeView.js" Assembly="System.Web" Path="~/Scripts/WebForms/TreeView.js" />
-                <asp:ScriptReference Name="WebParts.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebParts.js" />
-                <asp:ScriptReference Name="Focus.js" Assembly="System.Web" Path="~/Scripts/WebForms/Focus.js" />
-                <asp:ScriptReference Name="WebFormsBundle" />
-                <%--Site Scripts--%>
-            </Scripts>
-        </asp:ScriptManager>
+    </head>
+    <body>
+        <form runat="server">
+            <asp:ScriptManager runat="server">
+                <Scripts>
+                    <%--To learn more about bundling scripts in ScriptManager see https://go.microsoft.com/fwlink/?LinkID=301884 --%>
+                    <%--Framework Scripts--%>
+                    <asp:ScriptReference Name="MsAjaxBundle" />
+                    <asp:ScriptReference Name="jquery" />
+                    <asp:ScriptReference Name="WebForms.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebForms.js" />
+                    <asp:ScriptReference Name="WebUIValidation.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebUIValidation.js" />
+                    <asp:ScriptReference Name="MenuStandards.js" Assembly="System.Web" Path="~/Scripts/WebForms/MenuStandards.js" />
+                    <asp:ScriptReference Name="GridView.js" Assembly="System.Web" Path="~/Scripts/WebForms/GridView.js" />
+                    <asp:ScriptReference Name="DetailsView.js" Assembly="System.Web" Path="~/Scripts/WebForms/DetailsView.js" />
+                    <asp:ScriptReference Name="TreeView.js" Assembly="System.Web" Path="~/Scripts/WebForms/TreeView.js" />
+                    <asp:ScriptReference Name="WebParts.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebParts.js" />
+                    <asp:ScriptReference Name="Focus.js" Assembly="System.Web" Path="~/Scripts/WebForms/Focus.js" />
+                    <asp:ScriptReference Name="WebFormsBundle" />
+                    <%--Site Scripts--%>
+                </Scripts>
+            </asp:ScriptManager>
 
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary">
-            <div class="container">
-                <a class="navbar-brand" runat="server" href="~/">SaludYa!</a>
-                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                                           <%-- <li class="nav-item"><a class="nav-link" runat="server" href="~/">Home</a></li>--%>
-                       
-                        <li class="nav-item">
-                            <a class="nav-link" runat="server" href="~/ListadoPacientes.aspx">Pacientes</a>
-                        </li>
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary">
+                <div class="container">
+                    
+                    <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                       <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary">
+                <div class="container">
+                    <a class="navbar-brand" runat="server" href="~/">SaludYa!</a>
 
-                        <li class="nav-item">
-                            <a class="nav-link" runat="server" href="~/ListadoProfesionales.aspx">Profesionales</a>
-                        </li>
+                    <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
 
-                        <li class="nav-item">
-                            <a class="nav-link" runat="server" href="~/ListadoObrasSociales.aspx">Obras Sociales</a>
-                        </li>
+                    <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
+                        <ul class="navbar-nav flex-grow-1">
 
-                        <li class="nav-item">
-                            <a class="nav-link" runat="server" href="~/ListadoEspecialidades.aspx">Especialidades</a>
-                        </li>
+                            <li class="nav-item">
+                                <a id="navPacientes" class="nav-link" runat="server" href="~/ListadoPacientes.aspx">Pacientes</a>
+                            </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link" runat="server" href="~/ListadoTurnos.aspx">Turnos</a>
-                        </li>
+                            <li class="nav-item">
+                                <a id="navProfesionales" class="nav-link" runat="server" href="~/ListadoProfesionales.aspx">Profesionales</a>
+                            </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link" runat="server" href="~/Facturacion.aspx">Facturación</a>
-                        </li>
-                    </ul>
+                            <li class="nav-item">
+                                <a id="navObras" class="nav-link" runat="server" href="~/ListadoObrasSociales.aspx">Obras Sociales</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a id="navEspecialidades" class="nav-link" runat="server" href="~/ListadoEspecialidades.aspx">Especialidades</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a id="navTurnos" class="nav-link" runat="server" href="~/ListadoTurnos.aspx">Turnos</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a id="navFacturacion" class="nav-link" runat="server" href="~/Facturacion.aspx">Facturación</a>
+                            </li>
+
+                        </ul>
+                    </div>
                 </div>
+            </nav>
+
+            </nav>
+
+
+            <div class="container body-content">
+                <asp:ContentPlaceHolder ID="MainContent" runat="server">
+                </asp:ContentPlaceHolder>
+                <hr />
+                <footer class="text-center mt-5 pt-4 pb-4 bg-light">
+                    <p class="mb-0">
+                        &copy; <%: DateTime.Now.Year %> - SaludYa! Clínica Online<br>
+                        ¿Necesitás ayuda con tu cuenta o con la reserva de turnos?<br>
+                        Contactanos en info@SaludYa.com. Estamos para ayudarte.
+                     <%--   Contactanos en <a href="mailto:info@NOMBRECLINICA.com">info@NOMBRECLINICA.com</a>. Estamos para ayudarte.--%>
+                    </p>
+                </footer>
             </div>
-        </nav>
-
-
-        <div class="container body-content">
-            <asp:ContentPlaceHolder ID="MainContent" runat="server">
-            </asp:ContentPlaceHolder>
-            <hr />
-            <footer class="text-center mt-5 pt-4 pb-4 bg-light">
-                <p class="mb-0">
-                    &copy; <%: DateTime.Now.Year %> - SaludYa! Clínica Online<br>
-                    ¿Necesitás ayuda con tu cuenta o con la reserva de turnos?<br>
-                    Contactanos en info@SaludYa.com. Estamos para ayudarte.
-                 <%--   Contactanos en <a href="mailto:info@NOMBRECLINICA.com">info@NOMBRECLINICA.com</a>. Estamos para ayudarte.--%>
-                </p>
-            </footer>
-        </div>
-    </form>
-    <asp:PlaceHolder runat="server">
-        <%: Scripts.Render("~/Scripts/bootstrap.js") %>
-    </asp:PlaceHolder>
-</body>
-</html>
+        </form>
+        <asp:PlaceHolder runat="server">
+            <%: Scripts.Render("~/Scripts/bootstrap.js") %>
+        </asp:PlaceHolder>
+    </body>
+    </html>

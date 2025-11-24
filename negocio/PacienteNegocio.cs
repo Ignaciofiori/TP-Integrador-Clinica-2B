@@ -187,7 +187,7 @@ namespace negocio
                     (nombre, apellido, dni, fecha_nacimiento, telefono, email, direccion,
                      id_obra_social, nro_afiliado, activo)
                     VALUES
-                    (@nom, @ape, @dni, @fec, @tel, @mail, @dir, @obra, @nro, 1)");
+                    (@nom, @ape, @dni, @fec, @tel, @mail, @dir, @obra, 1, 1)");
 
                 datos.setearParametros("@nom", pac.Nombre);
                 datos.setearParametros("@ape", pac.Apellido);
@@ -200,9 +200,8 @@ namespace negocio
                 if (pac.ObraSocial != null)
                     datos.setearParametros("@obra", pac.ObraSocial.IdObraSocial);
                 else
-                    datos.setearParametros("@obra", null);
-
-                datos.setearParametros("@nro", pac.NroAfiliado);
+                    datos.setearParametros("@obra", DBNull.Value);
+                
 
                 datos.ejecutarAccion();
             }
@@ -229,7 +228,7 @@ namespace negocio
                         email = @mail,
                         direccion = @dir,
                         id_obra_social = @obra,
-                        nro_afiliado = @nro
+                        nro_afiliado = 1
                     WHERE id_paciente = @id");
 
                 datos.setearParametros("@nom", pac.Nombre);
@@ -245,7 +244,7 @@ namespace negocio
                 else
                     datos.setearParametros("@obra", null);
 
-                datos.setearParametros("@nro", pac.NroAfiliado);
+                
                 datos.setearParametros("@id", pac.IdPaciente);
 
                 datos.ejecutarAccion();

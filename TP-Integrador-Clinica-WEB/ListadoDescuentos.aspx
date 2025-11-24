@@ -34,7 +34,7 @@
                     <asp:BoundField HeaderText="Edad Mínima" DataField="EdadMin" />
                     <asp:BoundField HeaderText="Edad Máxima" DataField="EdadMax" />
                     <%-- El nombre de la Obra Social ya viene cargado en el objeto Descuento --%>
-                    <asp:BoundField HeaderText="Obra Social" DataField="IdObraSocial.Nombre" /> 
+                    <asp:BoundField HeaderText="Obra Social" DataField="ObraSocial.Nombre" /> 
 
                     <%-- Columna de Acciones --%>
                     <asp:TemplateField HeaderText="Acciones">
