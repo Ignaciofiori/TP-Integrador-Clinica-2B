@@ -110,17 +110,10 @@
                                 Display="Dynamic" />
                         </div>
 
-                        <div class="mb-3">
-                            <label>Obra Social</label>
-                            <asp:DropDownList ID="ddlObraSocial" runat="server" CssClass="form-select" />
-                            <asp:RequiredFieldValidator 
-                                runat="server"
-                                ControlToValidate="ddlObraSocial"
-                                InitialValue="" 
-                                ErrorMessage="Debe seleccionar una obra social."
-                                CssClass="text-danger"
-                                Display="Dynamic" />
-                        </div>
+                                 <div class="mb-3">
+                        <label>Obra Social</label>
+                        <asp:DropDownList ID="ddlObraSocial" runat="server" CssClass="form-select" />
+                    </div>
 
                         <div class="text-center mt-3">
                             <asp:Button ID="btnAceptar" runat="server" Text="Guardar"

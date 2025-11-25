@@ -10,18 +10,31 @@ namespace negocio
         private readonly HorarioAtencionNegocio horarioNeg = new HorarioAtencionNegocio();
         private readonly ObraSocialNegocio obraNeg = new ObraSocialNegocio();
 
-        public List<Turno> Listar()
+        public List<Turno> Listar(string estado = null)
         {
             List<Turno> lista = new List<Turno>();
             AccesoDatos datos = new AccesoDatos();
 
             try
             {
-                datos.setearConsulta(@"
+                string query = @"
             SELECT id_turno, id_paciente, id_horario, id_obra_social,
                    fecha_turno, hora_turno, estado, monto_total
             FROM Turno
-        ");
+        ";
+
+                
+                if (!string.IsNullOrEmpty(estado))
+                {
+                    query += " WHERE estado = @estado";
+                }
+
+                query += " ORDER BY fecha_turno ASC, hora_turno ASC";
+
+                datos.setearConsulta(query);
+
+                if (!string.IsNullOrEmpty(estado))
+                    datos.setearParametros("@estado", estado);
 
                 datos.ejecutarLectura();
 
@@ -37,7 +50,6 @@ namespace negocio
                 datos.cerrarConexion();
             }
         }
-
         public List<Turno> ListarPorPaciente(int idPaciente)
         {
             List<Turno> lista = new List<Turno>();
@@ -173,6 +185,81 @@ namespace negocio
                 datos.setearParametros("@estado", t.Estado);
 
                 datos.ejecutarAccion();
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+
+        public List<Turno> Buscar(string campo, string valor, string estado)
+        {
+            List<Turno> lista = new List<Turno>();
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                string query = @"
+        SELECT t.id_turno, t.id_paciente, t.id_horario, t.id_obra_social,
+               t.fecha_turno, t.hora_turno, t.estado, t.monto_total
+        FROM Turno t
+        INNER JOIN Paciente p ON p.id_paciente = t.id_paciente
+        INNER JOIN HorarioAtencion h ON h.id_horario = t.id_horario
+        INNER JOIN Profesional prof ON prof.id_profesional = h.id_profesional
+        INNER JOIN Especialidad esp ON esp.id_especialidad = h.id_especialidad
+        LEFT JOIN ObraSocial os ON os.id_obra_social = t.id_obra_social
+        WHERE t.estado = @estado
+        ";
+
+                switch (campo)
+                {
+                    case "Paciente":
+                        query += " AND (p.nombre + ' ' + p.apellido) LIKE @valor";
+                        break;
+
+                    case "Profesional":
+                        query += " AND (prof.nombre + ' ' + prof.apellido) LIKE @valor";
+                        break;
+
+                    case "Especialidad":
+                        query += " AND esp.nombre LIKE @valor";
+                        break;
+
+                    case "ObraSocial":
+                        query += @"
+            AND (
+                    os.nombre LIKE @valor
+                    OR (os.id_obra_social IS NULL AND 'particular' LIKE @valor)
+                )";
+                        break;
+
+                    case "MontoMayor":
+                        query += " AND t.monto_total >= @valorDecimal";
+                        break;
+
+                    case "MontoMenor":
+                        query += " AND t.monto_total <= @valorDecimal";
+                        break;
+                }
+
+
+                query += " ORDER BY t.fecha_turno DESC, t.hora_turno DESC";
+
+                datos.setearConsulta(query);
+                datos.setearParametros("@estado", estado);
+
+                if (campo == "MontoMayor" || campo == "MontoMenor")
+                    datos.setearParametros("@valorDecimal", decimal.Parse(valor));
+                else
+                    datos.setearParametros("@valor", "%" + valor + "%");
+
+                datos.ejecutarLectura();
+
+                while (datos.Lector.Read())
+                    lista.Add(MapearTurno(datos));
+
+                return lista;
             }
             finally
             {

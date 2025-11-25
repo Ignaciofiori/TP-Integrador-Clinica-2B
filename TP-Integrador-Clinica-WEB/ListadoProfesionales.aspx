@@ -112,6 +112,18 @@
             </ItemTemplate>
 </asp:TemplateField>
 
+   <asp:TemplateField HeaderText="Eliminar">
+    <ItemTemplate>
+        <asp:LinkButton
+            ID="btnEliminar"
+            runat="server"
+            Text="Eliminar"
+            CssClass="btn btn-danger btn-sm"
+            CommandName="Eliminar"
+            CommandArgument='<%# Eval("IdProfesional") %>'
+            OnClientClick="return confirm('¿Seguro que desea eliminar este profesional?');" />
+    </ItemTemplate>
+</asp:TemplateField>
 
         </Columns>
 

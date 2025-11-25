@@ -54,6 +54,15 @@ namespace TP_Integrador_Clinica_WEB
             {
                 Response.Redirect("ProfesionalEspecialidades.aspx?id=" + idProfesional);
             }
+            else if (e.CommandName == "Eliminar")
+            {
+                ProfesionalNegocio negocio = new ProfesionalNegocio();
+                negocio.Eliminar(idProfesional);
+
+                // Recargar el listado para reflejar el cambio
+                CargarProfesionales();
+            }
         }
+
     }
 }

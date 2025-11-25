@@ -12,4 +12,14 @@ public class Turno
     public string Estado { get; set; }
     public decimal? MontoTotal { get; set; }
     public bool Activo { get; set; }
+    public string NombreObraSocialTurno
+    {
+        get
+        {
+            if (ObraSocial == null || string.IsNullOrWhiteSpace(ObraSocial.Nombre))
+                return "Particular";
+
+            return ObraSocial.Nombre;
+        }
+    }
 }

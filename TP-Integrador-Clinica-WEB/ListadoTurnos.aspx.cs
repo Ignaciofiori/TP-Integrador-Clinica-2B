@@ -2,14 +2,14 @@
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using negocio;
-using modelo; // 🛑 Asegúrate de que esta referencia sea correcta
+using modelo; // 
 
 namespace TP_Integrador_Clinica_WEB
 {
     public partial class ListadoTurnos : System.Web.UI.Page
     {
-        // 🛑 DECLARACIÓN DE CONTROLES (Asegúrate de que los ID coincidan con tu ASPX)
-        // Si tu GridView se llama gvTurnos en el ASPX, usa gvTurnos aquí.
+        
+        
         protected GridView gvTurnos;
         protected DropDownList ddlCampo;
         protected TextBox txtFiltro;
@@ -20,7 +20,7 @@ namespace TP_Integrador_Clinica_WEB
         {
             if (!IsPostBack)
             {
-                // La grilla se carga con todos los turnos, ya que Listar() no acepta filtros.
+                
                 CargarGrilla();
             }
         }
@@ -29,8 +29,8 @@ namespace TP_Integrador_Clinica_WEB
         {
             try
             {
-                // Llama al método Listar sin parámetros (método existente).
-                gvTurnos.DataSource = turnoNegocio.Listar();
+          
+                gvTurnos.DataSource = turnoNegocio.Listar("Pendiente");
                 gvTurnos.DataBind();
             }
             catch (Exception ex)
@@ -46,28 +46,25 @@ namespace TP_Integrador_Clinica_WEB
         {
             int idTurno = Convert.ToInt32(e.CommandArgument);
 
-            // 🛑 LÓGICA DE CANCELAR (asumimos que este método SÍ existe)
-            if (e.CommandName == "CancelarTurno")
+            try
             {
-                try
+                if (e.CommandName == "Asistir")
                 {
-                    // Llama al método de cancelación de la capa de negocio
-                    turnoNegocio.CancelarTurno(idTurno);
-                    CargarGrilla(); // Recarga la grilla
+                    turnoNegocio.CambiarEstado(idTurno, "Asistido");
+                    CargarGrilla();
                 }
-                catch (Exception ex)
+                else if (e.CommandName == "Cancelar")
                 {
-                    Response.Write($"Error al cancelar el turno: {ex.Message}");
+                    turnoNegocio.CambiarEstado(idTurno, "Cancelado");
+                    CargarGrilla();
                 }
             }
-
-            // 🛑 MarcarAsistido (La lógica queda pendiente para tu compañero, solo recargamos)
-            else if (e.CommandName == "MarcarAsistido")
+            catch (Exception ex)
             {
-                // Aquí tu compañero debe implementar turnoNegocio.MarcarAsistido(idTurno);
-                CargarGrilla();
+                Response.Write("Error al actualizar el estado del turno: " + ex.Message);
             }
         }
+
 
         protected void gvTurnos_RowDataBound(object sender, GridViewRowEventArgs e)
         {
@@ -89,23 +86,14 @@ namespace TP_Integrador_Clinica_WEB
 
         // --- BOTONES DE ACCIÓN Y NAVEGACIÓN ---
 
-        protected void btnNuevoTurno_Click(object sender, EventArgs e)
-        {
-            Response.Redirect("RegistrarTurno.aspx");
-        }
-
-        protected void btnNuevoHorario_Click(object sender, EventArgs e)
-        {
-            Response.Redirect("RegistrarHorario.aspx");
-        }
-
-        // Manejador para los botones de Ver Pendientes, Asistidos, Cancelados
         protected void btnEstado_Click(object sender, EventArgs e)
         {
-            // Implementación pendiente: Como Listar() no filtra, solo recarga la grilla completa.
-            CargarGrilla();
-        }
+            Button btn = (Button)sender;
+            string estado = btn.CommandArgument;
 
+            Response.Redirect($"TurnosEstado.aspx?estado={estado}");
+        }
+            
         // --- MANEJADORES DE BÚSQUEDA DINÁMICA ---
 
         protected void ddlCampo_SelectedIndexChanged(object sender, EventArgs e)
@@ -115,14 +103,49 @@ namespace TP_Integrador_Clinica_WEB
 
         protected void btnBuscar_Click(object sender, EventArgs e)
         {
-            // Implementación pendiente: Aplicar el filtro dinámico.
-            CargarGrilla();
+            string campo = ddlCampo.SelectedValue;
+            string filtro = txtFiltro.Text.Trim();
+
+            if (campo == "0" || string.IsNullOrEmpty(filtro))
+            {
+                CargarGrilla();
+                return;
+            }
+
+            // --- VALIDACIÓN DE MONTOS ---
+            if (campo == "MontoMayor" || campo == "MontoMenor")
+            {
+                decimal monto;
+
+                if (!decimal.TryParse(filtro, out monto) || monto <= 0)
+                {
+                    ScriptManager.RegisterStartupScript(this, GetType(),
+                        "alertMonto", "alert('Debe ingresar un monto válido y mayor a 0.');", true);
+
+                    return;
+                }
+            }
+
+            gvTurnos.DataSource = turnoNegocio.Buscar(campo, filtro, "pendiente");
+            gvTurnos.DataBind();
         }
 
         protected void btnLimpiarFiltro_Click(object sender, EventArgs e)
         {
-            // Lógica pendiente: Limpiar controles.
+            txtFiltro.Text = "";
+            ddlCampo.SelectedIndex = 0;
+
             CargarGrilla();
         }
+        protected void btnNuevoTurno_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("RegistrarTurno.aspx");
+        }
+
+        protected void btnNuevoHorario_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("RegistrarHorario.aspx");
+        }
     }
+
 }
