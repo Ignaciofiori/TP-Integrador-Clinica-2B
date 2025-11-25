@@ -260,5 +260,66 @@ namespace negocio
                 datos.cerrarConexion();
             }
         }
+
+        public bool ExisteConflictoHorario(HorarioAtencion nuevo)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                
+                // 1) Conflictos por PROFESIONAL
+
+                datos.setearConsulta(@"
+            SELECT 1
+            FROM HorarioAtencion
+            WHERE id_profesional = @prof
+              AND dia_semana = @dia
+              AND activo = 1
+              AND (@inicio < hora_fin AND @fin > hora_inicio)
+        ");
+
+                datos.setearParametros("@prof", nuevo.Profesional.IdProfesional);
+                datos.setearParametros("@dia", nuevo.DiaSemana);
+                datos.setearParametros("@inicio", nuevo.HoraInicio);
+                datos.setearParametros("@fin", nuevo.HoraFin);
+
+                datos.ejecutarLectura();
+
+                if (datos.Lector.Read())
+                    return true; // conflicto  profesional ocupado
+
+                datos.cerrarConexion();
+                datos = new AccesoDatos(); // reset para segunda query
+
+
+                // 2) Conflictos por CONSULTORIO
+                datos.setearConsulta(@"
+            SELECT 1
+            FROM HorarioAtencion
+            WHERE id_consultorio = @cons
+              AND dia_semana = @dia
+              AND activo = 1
+              AND (@inicio < hora_fin AND @fin > hora_inicio)
+        ");
+
+                datos.setearParametros("@cons", nuevo.Consultorio.IdConsultorio);
+                datos.setearParametros("@dia", nuevo.DiaSemana);
+                datos.setearParametros("@inicio", nuevo.HoraInicio);
+                datos.setearParametros("@fin", nuevo.HoraFin);
+
+                datos.ejecutarLectura();
+
+                if (datos.Lector.Read())
+                    return true; // conflicto consultorio ocupado
+
+                return false; // No hubo conflictos
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
     }
+
 }
