@@ -159,8 +159,6 @@ namespace negocio
             }
         }
 
-
-
         public void Agregar(HorarioAtencion h)
         {
             AccesoDatos datos = new AccesoDatos();
@@ -318,6 +316,90 @@ namespace negocio
             finally
             {
                 datos.cerrarConexion();
+            }
+        }
+
+        public List<HorarioAtencion> ListarDisponibles(int idProfesional, DateTime fecha)
+        {
+            List<HorarioAtencion> lista = new List<HorarioAtencion>();
+            AccesoDatos datos = new AccesoDatos();
+
+            // Convertir el día de la semana de la fecha a un formato que coincida con tu base de datos.
+            // Asumo que tu base de datos usa el nombre del día en español (ej: "Lunes", "Martes").
+            // Si tu DB usa números (0=Dom, 1=Lun, etc.), deberás adaptar este mapeo.
+            // ---------------------------------------------------------------------------------------
+            string diaSemanaDB = ObtenerDiaSemanaEnEspañol(fecha.DayOfWeek);
+            // ---------------------------------------------------------------------------------------
+
+            ProfesionalNegocio profesionalNeg = new ProfesionalNegocio();
+            EspecialidadNegocio especialidadNeg = new EspecialidadNegocio();
+            ConsultorioNegocio consultorioNeg = new ConsultorioNegocio();
+
+            try
+            {
+                // Consulta: Busca todos los HorariosAtencion activos para el Profesional y el Día de la Semana dado.
+                // Utiliza LEFT JOIN con la tabla Turno para encontrar qué horarios NO tienen un turno confirmado/pendiente.
+                datos.setearConsulta(@"
+            SELECT H.id_horario, H.id_profesional, H.id_especialidad,
+                   H.id_consultorio, H.dia_semana, H.hora_inicio, H.hora_fin, H.activo
+            FROM HorarioAtencion H
+            LEFT JOIN Turno T ON H.id_horario = T.id_horario 
+                                 AND T.fecha_turno = @fecha 
+                                 AND T.estado = 'pendiente' 
+            WHERE H.activo = 1 
+              AND H.id_profesional = @idProf
+              AND H.dia_semana = @dia
+              AND T.id_turno IS NULL -- CRUCIAL: Excluye los horarios que ya tienen un turno en esa fecha
+        ");
+
+                datos.setearParametros("@idProf", idProfesional);
+                datos.setearParametros("@fecha", fecha.Date); // Solo necesitamos la fecha, sin la hora
+                datos.setearParametros("@dia", diaSemanaDB);
+
+                datos.ejecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    // Reutilizamos la lógica de mapeo que ya tienes
+                    HorarioAtencion aux = new HorarioAtencion();
+
+                    aux.IdHorario = (int)datos.Lector["id_horario"];
+                    aux.Profesional = profesionalNeg.BuscarPorId((int)datos.Lector["id_profesional"]);
+                    aux.Especialidad = especialidadNeg.BuscarPorId((int)datos.Lector["id_especialidad"]);
+                    aux.Consultorio = consultorioNeg.BuscarPorId((int)datos.Lector["id_consultorio"]);
+
+                    aux.DiaSemana = (string)datos.Lector["dia_semana"];
+                    aux.HoraInicio = (TimeSpan)datos.Lector["hora_inicio"];
+                    aux.HoraFin = (TimeSpan)datos.Lector["hora_fin"];
+                    aux.Activo = (bool)datos.Lector["activo"];
+
+                    // Agregamos un campo de Display que usaremos en el DropDownList
+                    // Esto asume que el turno dura un bloque (ej: 30 minutos)
+                    aux.HorarioDisplay = $"{aux.HoraInicio:hh\\:mm} a {aux.HoraFin:hh\\:mm}";
+
+                    lista.Add(aux);
+                }
+
+                return lista;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        private string ObtenerDiaSemanaEnEspañol(DayOfWeek dia)
+        {
+            switch (dia)
+            {
+                case DayOfWeek.Monday: return "Lunes";
+                case DayOfWeek.Tuesday: return "Martes";
+                case DayOfWeek.Wednesday: return "Miércoles";
+                case DayOfWeek.Thursday: return "Jueves";
+                case DayOfWeek.Friday: return "Viernes";
+                case DayOfWeek.Saturday: return "Sábado";
+                case DayOfWeek.Sunday: return "Domingo";
+                default: return "";
             }
         }
     }

@@ -304,5 +304,52 @@ namespace negocio
                 datos.cerrarConexion();
             }
         }
+
+        public List<Profesional> ListarPorEspecialidad(int idEsp)
+        {
+            List<Profesional> lista = new List<Profesional>();
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta(@"
+            SELECT P.id_profesional, P.nombre, P.apellido, P.dni, P.telefono, P.email, P.matricula 
+            FROM Profesional P 
+            INNER JOIN Profesional_Especialidad PE ON P.id_profesional = PE.id_profesional 
+            WHERE P.activo = 1 AND PE.id_especialidad = @idEsp
+        ");
+
+                datos.setearParametros("@idEsp", idEsp);
+                datos.ejecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    Profesional aux = new Profesional();
+                    // --- INICIO Mapeo manual (puedes reutilizar tu lógica de mapeo si es más concisa) ---
+                    if (!(datos.Lector["id_profesional"] is DBNull))
+                        aux.IdProfesional = (int)datos.Lector["id_profesional"];
+                    if (!(datos.Lector["nombre"] is DBNull))
+                        aux.Nombre = (string)datos.Lector["nombre"];
+                    if (!(datos.Lector["apellido"] is DBNull))
+                        aux.Apellido = (string)datos.Lector["apellido"];
+                    if (!(datos.Lector["dni"] is DBNull))
+                        aux.Dni = (string)datos.Lector["dni"];
+                    if (!(datos.Lector["telefono"] is DBNull))
+                        aux.Telefono = (string)datos.Lector["telefono"];
+                    if (!(datos.Lector["email"] is DBNull))
+                        aux.Email = (string)datos.Lector["email"];
+                    if (!(datos.Lector["matricula"] is DBNull))
+                        aux.Matricula = (string)datos.Lector["matricula"];
+
+                    lista.Add(aux);
+                }
+
+                return lista;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
     }
 }

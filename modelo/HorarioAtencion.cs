@@ -10,4 +10,6 @@ public class HorarioAtencion
     public TimeSpan HoraInicio { get; set; }
     public TimeSpan HoraFin { get; set; }
     public bool Activo { get; set; }
+
+    public string HorarioDisplay { get; set; }
 }

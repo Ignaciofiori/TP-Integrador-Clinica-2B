@@ -18,10 +18,10 @@ namespace negocio
             try
             {
                 datos.setearConsulta(@"
-                    SELECT id_turno, id_paciente, id_horario, id_obra_social,
-                           fecha_turno, hora_turno, estado, monto_total
-                    FROM Turno
-                ");
+            SELECT id_turno, id_paciente, id_horario, id_obra_social,
+                   fecha_turno, hora_turno, estado, monto_total
+            FROM Turno
+        ");
 
                 datos.ejecutarLectura();
 
