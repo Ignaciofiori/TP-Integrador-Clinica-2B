@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="FormularioEspecialidad.aspx.cs" Inherits="TP_Integrador_Clinica_WEB.FormularioEspecialidad" MasterPageFile="~/Site.Master" %>
+﻿<%@ Page Title="Especialidad" Language="C#" AutoEventWireup="true" CodeBehind="FormularioEspecialidad.aspx.cs" Inherits="TP_Integrador_Clinica_WEB.FormularioEspecialidad" MasterPageFile="~/Site.Master" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     

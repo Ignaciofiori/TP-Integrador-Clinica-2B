@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="ListadoEspecialidades.aspx.cs" 
+﻿<%@ Page Title="Listado de Especialidades" Language="C#" AutoEventWireup="true" CodeBehind="ListadoEspecialidades.aspx.cs" 
     Inherits="TP_Integrador_Clinica_WEB.ListadoEspecialidades" MasterPageFile="~/Site.Master" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
