@@ -200,5 +200,53 @@ namespace negocio
         public void CancelarTurno(int idTurno) => CambiarEstado(idTurno, "cancelado");
 
         public void ConfirmarAsistencia(int idTurno) => CambiarEstado(idTurno, "asistido");
+
+        public decimal DeterminarMonto(Turno turno)
+        {
+            // Valor base
+            int idProf = turno.Horario.Profesional.IdProfesional;
+            int idEsp = turno.Horario.Especialidad.IdEspecialidad;
+
+            EspecialidadNegocio negocioEsp =  new    EspecialidadNegocio();
+            decimal valorBase = negocioEsp.BuscarValorConsulta(idProf,idEsp);
+
+            // Tiene convenio con la obra social
+            ObraSocialNegocio  negocioObra = new ObraSocialNegocio();
+
+
+            int idPaciente = turno.Paciente.IdPaciente;
+            int idObraSocialTurno = turno.Paciente.ObraSocial?.IdObraSocial ?? 0;
+
+            bool tieneConvenio = negocioObra.ExisteRelacionActiva(idProf, idObraSocialTurno);
+
+            // Si NO hay obra social Paga completo
+            if (idObraSocialTurno == 0)
+                return valorBase;
+            // Si NO tiene convenio Paga completo
+            if (!tieneConvenio)
+                return valorBase;
+
+
+            // Edad del paciente
+            int edad = DateTime.Today.Year - turno.Paciente.FechaNacimiento.Value.Year;
+            if (turno.Paciente.FechaNacimiento > DateTime.Today.AddYears(-edad))
+                edad--;
+
+            // 5. Descuento por edad (si existe)
+            DescuentoNegocio descuentoNegocio = new DescuentoNegocio();
+            List<decimal> descuentos = descuentoNegocio.ObtenerDescuentosPorEdad(edad, idObraSocialTurno);
+
+
+            // 6. Aplicar cobertura OS
+            decimal cobertura = turno.Paciente.ObraSocial.PorcentajeCobertura;
+            decimal montoPaciente = valorBase * (1 - cobertura / 100);
+
+            //) Aplicar descuentos (todos)
+            foreach (decimal d in descuentos)
+                montoPaciente *= (1 - d / 100);
+
+            return montoPaciente;
+          
+        }
     }
 }

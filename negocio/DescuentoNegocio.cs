@@ -267,5 +267,38 @@ namespace negocio
             }        }
 
 
+        public List<decimal> ObtenerDescuentosPorEdad(int edad, int idObraSocial)
+        {
+            List<decimal> descuentos = new List<decimal>();
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta(@"
+            SELECT edad_min, edad_max, porcentaje_descuento
+            FROM Descuento
+            WHERE id_obra_social = @obra AND activo = 1");
+
+                datos.setearParametros("@obra", idObraSocial);
+                datos.ejecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    int min = (int)datos.Lector["edad_min"];
+                    int max = (int)datos.Lector["edad_max"];
+                    decimal porc = (decimal)datos.Lector["porcentaje_descuento"];
+
+                    if (edad >= min && edad <= max)
+                        descuentos.Add(porc);
+                }
+
+                return descuentos;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
     }
 }

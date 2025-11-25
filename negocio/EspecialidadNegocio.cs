@@ -321,12 +321,46 @@ namespace negocio
                 datos.setearParametros("@esp", idEspecialidad);
                 datos.ejecutarLectura();
 
-                return datos.Lector.Read(); // Si hay fila → existe
+                return datos.Lector.Read(); // Si hay fila existe
             }
             finally
             {
                 datos.cerrarConexion();
             }
         }
+
+        public decimal BuscarValorConsulta(int idProfesional, int idEspecialidad)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta(@"
+            SELECT valor_consulta
+            FROM Profesional_Especialidad
+            WHERE id_profesional = @prof
+              AND id_especialidad = @esp
+              AND activo = 1
+        ");
+
+                datos.setearParametros("@prof", idProfesional);
+                datos.setearParametros("@esp", idEspecialidad);
+
+                datos.ejecutarLectura();
+
+                if (datos.Lector.Read())
+                {
+                    return (decimal)datos.Lector["valor_consulta"];
+                }
+
+                throw new Exception("No existe la relación Profesional–Especialidad o está inactiva.");
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
     }
+
 }
