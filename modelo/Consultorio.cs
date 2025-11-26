@@ -6,4 +6,12 @@
     public string Piso { get; set; }
     public string NumeroSala { get; set; }
     public bool Activo { get; set; }
+
+    public string NombreCompleto
+    {
+        get
+        {
+            return $"{Nombre} - Sala {NumeroSala}";
+        }
+    }
 }

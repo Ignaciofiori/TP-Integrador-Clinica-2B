@@ -101,6 +101,10 @@ namespace TP_Integrador_Clinica_WEB
             // Lógica pendiente: Ajustar el modo del TextBox de filtro.
         }
 
+        protected void btnVerHorarios_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("ListadoHorarios.aspx");
+        }
         protected void btnBuscar_Click(object sender, EventArgs e)
         {
             string campo = ddlCampo.SelectedValue;

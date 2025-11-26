@@ -19,9 +19,22 @@ namespace negocio
             {
                 datos.setearConsulta(@"
                     SELECT id_horario, id_profesional, id_especialidad,
-                           id_consultorio, dia_semana, hora_inicio, hora_fin, activo
-                    FROM HorarioAtencion
-                    WHERE activo = 1");
+       id_consultorio, dia_semana, hora_inicio, hora_fin, activo
+FROM HorarioAtencion
+WHERE activo = 1
+ORDER BY 
+    CASE dia_semana
+        WHEN 'Lunes' THEN 1
+        WHEN 'Martes' THEN 2
+        WHEN 'Miércoles' THEN 3
+        WHEN 'Jueves' THEN 4
+        WHEN 'Viernes' THEN 5
+        WHEN 'Sábado' THEN 6
+        WHEN 'Domingo' THEN 7
+        ELSE 8
+    END,
+    hora_inicio;
+");
 
                 datos.ejecutarLectura();
 
@@ -116,42 +129,63 @@ namespace negocio
 
 
 
-        public HorarioAtencion BuscarPorId(int id)
+        public HorarioAtencion BuscarPorId(int idHorario)
         {
             AccesoDatos datos = new AccesoDatos();
-            ProfesionalNegocio profesionalNeg = new ProfesionalNegocio();
-            EspecialidadNegocio especialidadNeg = new EspecialidadNegocio();
-            ConsultorioNegocio consultorioNeg = new ConsultorioNegocio();
 
             try
             {
                 datos.setearConsulta(@"
-                    SELECT id_horario, id_profesional, id_especialidad, 
-                           id_consultorio, dia_semana, hora_inicio, hora_fin, activo
-                    FROM HorarioAtencion
-                    WHERE id_horario = @id");
+            SELECT h.id_horario,
+                   h.id_profesional,
+                   h.id_especialidad,
+                   h.id_consultorio,
+                   h.hora_inicio,
+                   h.hora_fin,
+                   h.dia_semana,
+                   c.nombre AS consultorio_nombre,
+                   c.direccion,
+                   c.piso,
+                   c.numero_sala
+            FROM HorarioAtencion h
+            INNER JOIN Consultorio c ON c.id_consultorio = h.id_consultorio
+            WHERE h.id_horario = @id
+        ");
 
-                datos.setearParametros("@id", id);
+                datos.setearParametros("@id", idHorario);
                 datos.ejecutarLectura();
-
-                HorarioAtencion aux = null;
 
                 if (datos.Lector.Read())
                 {
-                    aux = new HorarioAtencion();
+                    HorarioAtencion h = new HorarioAtencion();
 
-                    aux.IdHorario = (int)datos.Lector["id_horario"];
-                    aux.Profesional = profesionalNeg.BuscarPorId((int)datos.Lector["id_profesional"]);
-                    aux.Especialidad = especialidadNeg.BuscarPorId((int)datos.Lector["id_especialidad"]);
-                    aux.Consultorio = consultorioNeg.BuscarPorId((int)datos.Lector["id_consultorio"]);
+                    h.IdHorario = (int)datos.Lector["id_horario"];
 
-                    aux.DiaSemana = (string)datos.Lector["dia_semana"];
-                    aux.HoraInicio = (TimeSpan)datos.Lector["hora_inicio"];
-                    aux.HoraFin = (TimeSpan)datos.Lector["hora_fin"];
-                    aux.Activo = (bool)datos.Lector["activo"];
+                    // PROFESIONAL
+                    h.Profesional = new ProfesionalNegocio().BuscarPorId((int)datos.Lector["id_profesional"]);
+
+                    // ESPECIALIDAD
+                    h.Especialidad = new EspecialidadNegocio().BuscarPorId((int)datos.Lector["id_especialidad"]);
+
+                    // CONSULTORIO
+                    h.Consultorio = new Consultorio
+                    {
+                        IdConsultorio = (int)datos.Lector["id_consultorio"],
+                        Nombre = datos.Lector["consultorio_nombre"].ToString(),
+                        Direccion = datos.Lector["direccion"].ToString(),
+                        Piso = datos.Lector["piso"].ToString(),
+                        NumeroSala = datos.Lector["numero_sala"].ToString()
+                    };
+
+                    // HORARIOS Y DÍA
+                    h.HoraInicio = (TimeSpan)datos.Lector["hora_inicio"];
+                    h.HoraFin = (TimeSpan)datos.Lector["hora_fin"];
+                    h.DiaSemana = datos.Lector["dia_semana"].ToString();
+
+                    return h;
                 }
 
-                return aux;
+                return null;
             }
             finally
             {
@@ -265,16 +299,16 @@ namespace negocio
 
             try
             {
-                
-                // 1) Conflictos por PROFESIONAL
-
+                // -----------------------------
+                // 1) CONFLICTO POR PROFESIONAL
+                // -----------------------------
                 datos.setearConsulta(@"
             SELECT 1
-            FROM HorarioAtencion
-            WHERE id_profesional = @prof
-              AND dia_semana = @dia
-              AND activo = 1
-              AND (@inicio < hora_fin AND @fin > hora_inicio)
+            FROM HorarioAtencion ha
+            WHERE ha.id_profesional = @prof
+              AND ha.dia_semana = @dia
+              AND ha.activo = 1
+              AND (@inicio < ha.hora_fin AND @fin > ha.hora_inicio)
         ");
 
                 datos.setearParametros("@prof", nuevo.Profesional.IdProfesional);
@@ -285,20 +319,22 @@ namespace negocio
                 datos.ejecutarLectura();
 
                 if (datos.Lector.Read())
-                    return true; // conflicto  profesional ocupado
+                    return true; // solapamiento profesional
 
                 datos.cerrarConexion();
-                datos = new AccesoDatos(); // reset para segunda query
+                datos = new AccesoDatos();
 
 
-                // 2) Conflictos por CONSULTORIO
+                // -----------------------------
+                // 2) CONFLICTO POR CONSULTORIO
+                // -----------------------------
                 datos.setearConsulta(@"
             SELECT 1
-            FROM HorarioAtencion
-            WHERE id_consultorio = @cons
-              AND dia_semana = @dia
-              AND activo = 1
-              AND (@inicio < hora_fin AND @fin > hora_inicio)
+            FROM HorarioAtencion ha
+            WHERE ha.id_consultorio = @cons
+              AND ha.dia_semana = @dia
+              AND ha.activo = 1
+              AND (@inicio < ha.hora_fin AND @fin > ha.hora_inicio)
         ");
 
                 datos.setearParametros("@cons", nuevo.Consultorio.IdConsultorio);
@@ -309,9 +345,9 @@ namespace negocio
                 datos.ejecutarLectura();
 
                 if (datos.Lector.Read())
-                    return true; // conflicto consultorio ocupado
+                    return true; // solapamiento consultorio
 
-                return false; // No hubo conflictos
+                return false;
             }
             finally
             {
@@ -402,6 +438,8 @@ namespace negocio
                 default: return "";
             }
         }
+    
+        
     }
 
 }

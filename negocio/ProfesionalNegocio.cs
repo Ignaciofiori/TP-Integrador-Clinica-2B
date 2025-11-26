@@ -304,6 +304,33 @@ namespace negocio
                 datos.cerrarConexion();
             }
         }
+        public bool ProfesionalDictaEspecialidad(int idProfesional, int idEspecialidad)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta(@"
+            SELECT 1
+            FROM Profesional_Especialidad
+            WHERE id_profesional = @prof
+              AND id_especialidad = @esp
+              AND activo = 1
+        ");
+
+                datos.setearParametros("@prof", idProfesional);
+                datos.setearParametros("@esp", idEspecialidad);
+
+                datos.ejecutarLectura();
+
+                return datos.Lector.Read();
+               
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
 
         public List<Profesional> ListarPorEspecialidad(int idEsp)
         {

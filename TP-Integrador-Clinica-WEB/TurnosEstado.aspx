@@ -66,7 +66,7 @@
                 <asp:BoundField DataField="NombreObraSocialTurno" HeaderText="Obra Social" />
                 <asp:BoundField DataField="MontoTotal" HeaderText="Monto Total" DataFormatString="{0:C}" HtmlEncode="false" />
                 <asp:BoundField DataField="FechaTurno" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" />
-                
+                <asp:BoundField DataField="ConsultorioNombre" HeaderText="Consultorio" />
                 <asp:TemplateField HeaderText="Hora">
                     <ItemTemplate>
                         <%# ((TimeSpan)Eval("HoraTurno")).ToString(@"hh\:mm") %>

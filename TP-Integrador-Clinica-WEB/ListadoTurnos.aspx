@@ -10,8 +10,8 @@
             <asp:Button ID="btnNuevoTurno" runat="server" Text="Agregar Turno" 
                 CssClass="btn btn-primary me-3 mb-2" OnClick="btnNuevoTurno_Click" />
 
-            <asp:Button ID="btnNuevoHorario" runat="server" Text="Agregar Horario de Atención" 
-                CssClass="btn btn-success me-4 mb-2" OnClick="btnNuevoHorario_Click" />
+            <asp:Button ID="btnVerHorarios" runat="server" Text="Ver Horarios de Atención"
+                     CssClass="btn btn-info me-3 mb-2" OnClick="btnVerHorarios_Click" />
                 
             <%-- Botones de NAVEGACIÓN POR ESTADO --%>
         
@@ -71,6 +71,7 @@
                 <asp:BoundField DataField="MontoTotal" HeaderText="Monto Total" DataFormatString="{0:C}" HtmlEncode="false" ItemStyle-Width="120px" />
                 <asp:BoundField DataField="FechaTurno" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" />
                 <asp:BoundField DataField="HoraTurno" HeaderText="Hora" DataFormatString="{0:hh\:mm}" />
+                <asp:BoundField DataField="ConsultorioNombre" HeaderText="Consultorio" />
                 <asp:BoundField DataField="Estado" HeaderText="Estado" />
 
                <asp:TemplateField HeaderText="Acciones" ItemStyle-Width="200px">

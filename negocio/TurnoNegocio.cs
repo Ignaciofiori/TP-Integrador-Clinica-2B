@@ -18,18 +18,19 @@ namespace negocio
             try
             {
                 string query = @"
-            SELECT id_turno, id_paciente, id_horario, id_obra_social,
-                   fecha_turno, hora_turno, estado, monto_total
-            FROM Turno
+        SELECT t.id_turno, t.id_paciente, t.id_horario, t.id_obra_social,
+               t.fecha_turno, t.hora_turno, t.estado, t.monto_total,
+               c.nombre AS consultorio_nombre,
+               c.numero_sala AS consultorio_sala
+        FROM Turno t
+        INNER JOIN HorarioAtencion h ON h.id_horario = t.id_horario
+        INNER JOIN Consultorio c ON c.id_consultorio = h.id_consultorio
         ";
 
-                
                 if (!string.IsNullOrEmpty(estado))
-                {
-                    query += " WHERE estado = @estado";
-                }
+                    query += " WHERE t.estado = @estado";
 
-                query += " ORDER BY fecha_turno ASC, hora_turno ASC";
+                query += " ORDER BY t.fecha_turno ASC, t.hora_turno ASC";
 
                 datos.setearConsulta(query);
 
@@ -40,7 +41,15 @@ namespace negocio
 
                 while (datos.Lector.Read())
                 {
-                    lista.Add(MapearTurno(datos));
+                    var turno = MapearTurno(datos);
+
+                    turno.Horario.Consultorio = new Consultorio
+                    {
+                        Nombre = (string)datos.Lector["consultorio_nombre"],
+                        NumeroSala = (string)datos.Lector["consultorio_sala"]
+                    };
+
+                    lista.Add(turno);
                 }
 
                 return lista;
@@ -50,6 +59,7 @@ namespace negocio
                 datos.cerrarConexion();
             }
         }
+
         public List<Turno> ListarPorPaciente(int idPaciente)
         {
             List<Turno> lista = new List<Turno>();
@@ -201,17 +211,30 @@ namespace negocio
             try
             {
                 string query = @"
-        SELECT t.id_turno, t.id_paciente, t.id_horario, t.id_obra_social,
-               t.fecha_turno, t.hora_turno, t.estado, t.monto_total
-        FROM Turno t
-        INNER JOIN Paciente p ON p.id_paciente = t.id_paciente
-        INNER JOIN HorarioAtencion h ON h.id_horario = t.id_horario
-        INNER JOIN Profesional prof ON prof.id_profesional = h.id_profesional
-        INNER JOIN Especialidad esp ON esp.id_especialidad = h.id_especialidad
-        LEFT JOIN ObraSocial os ON os.id_obra_social = t.id_obra_social
-        WHERE t.estado = @estado
-        ";
+SELECT  
+    t.id_turno, 
+    t.id_paciente, 
+    t.id_horario, 
+    t.id_obra_social,
+    t.fecha_turno, 
+    t.hora_turno, 
+    t.estado, 
+    t.monto_total,
+    c.nombre AS consultorio_nombre,
+    c.numero_sala AS consultorio_sala
+FROM Turno t
+INNER JOIN Paciente p ON p.id_paciente = t.id_paciente
+INNER JOIN HorarioAtencion h ON h.id_horario = t.id_horario
+INNER JOIN Profesional prof ON prof.id_profesional = h.id_profesional
+INNER JOIN Especialidad esp ON esp.id_especialidad = h.id_especialidad
+INNER JOIN Consultorio c ON c.id_consultorio = h.id_consultorio
+LEFT JOIN ObraSocial os ON os.id_obra_social = t.id_obra_social
+WHERE t.estado = @estado
+";
 
+                // ----------------------------------------
+                // FILTROS POR CAMPO
+                // ----------------------------------------
                 switch (campo)
                 {
                     case "Paciente":
@@ -228,10 +251,10 @@ namespace negocio
 
                     case "ObraSocial":
                         query += @"
-            AND (
-                    os.nombre LIKE @valor
-                    OR (os.id_obra_social IS NULL AND 'particular' LIKE @valor)
-                )";
+    AND (
+            os.nombre LIKE @valor
+         OR (os.id_obra_social IS NULL AND 'particular' LIKE @valor)
+        )";
                         break;
 
                     case "MontoMayor":
@@ -243,21 +266,41 @@ namespace negocio
                         break;
                 }
 
-
                 query += " ORDER BY t.fecha_turno DESC, t.hora_turno DESC";
 
+                // ----------------------------------------
+                // EJECUCIÓN
+                // ----------------------------------------
                 datos.setearConsulta(query);
                 datos.setearParametros("@estado", estado);
 
                 if (campo == "MontoMayor" || campo == "MontoMenor")
+                {
                     datos.setearParametros("@valorDecimal", decimal.Parse(valor));
+                }
                 else
+                {
                     datos.setearParametros("@valor", "%" + valor + "%");
+                }
 
                 datos.ejecutarLectura();
 
+                // ----------------------------------------
+                // MAPEO
+                // ----------------------------------------
                 while (datos.Lector.Read())
-                    lista.Add(MapearTurno(datos));
+                {
+                    var turno = MapearTurno(datos);
+
+                    // Agregar Consultorio
+                    turno.Horario.Consultorio = new Consultorio
+                    {
+                        Nombre = (string)datos.Lector["consultorio_nombre"],
+                        NumeroSala = (string)datos.Lector["consultorio_sala"]
+                    };
+
+                    lista.Add(turno);
+                }
 
                 return lista;
             }

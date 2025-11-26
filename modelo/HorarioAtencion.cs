@@ -11,5 +11,28 @@ public class HorarioAtencion
     public TimeSpan HoraFin { get; set; }
     public bool Activo { get; set; }
 
+    public string HoraInicioStr => HoraInicio.ToString(@"hh\:mm");
+    public string HoraFinStr => HoraFin.ToString(@"hh\:mm");
+
     public string HorarioDisplay { get; set; }
+
+    public string NombreCompletoProfesional
+    {
+        get
+        {
+            if (Profesional == null)
+                return "";
+
+            return Profesional.NombreCompleto;
+        }
+    }
+    public string NombreConsultorio
+    {
+        get
+        {
+            if (Consultorio == null)
+                return "";
+            return Consultorio.NombreCompleto;
+        }
+    }
 }
