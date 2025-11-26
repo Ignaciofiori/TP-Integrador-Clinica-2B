@@ -22,6 +22,7 @@ namespace TP_Integrador_Clinica_WEB
         //Para turnos
         protected DropDownList ddlDiaSemana;
         protected DropDownList ddlFechaDisponible;
+        protected Label lblConsultorio;
 
 
         // Negocios necesarios
@@ -359,16 +360,18 @@ namespace TP_Integrador_Clinica_WEB
             {
                 int idPaciente = int.Parse(ddlPaciente.SelectedValue);
                 Paciente paciente = pacienteNegocio.BuscarPorId(idPaciente);
+                var horario = horarioNegocio.BuscarPorId(int.Parse(ddlHorario.SelectedValue));
+                lblConsultorio.Text = $"Consultorio: {horario.Consultorio.NombreCompleto}";
 
                 if (paciente != null)
                 {
-                    // Recalcular el costo para mostrarlo al usuario
                     ActualizarResumenCosto(paciente);
                 }
             }
             else
             {
                 lblCosto.Text = "Seleccione un horario para ver el costo.";
+                lblConsultorio.Text = "Seleccione un horario.";
             }
         }
 

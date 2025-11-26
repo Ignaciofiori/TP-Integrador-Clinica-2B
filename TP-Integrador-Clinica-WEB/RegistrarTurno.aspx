@@ -87,6 +87,10 @@
                             <asp:DropDownList ID="ddlHorario" runat="server" CssClass="form-control" DataValueField="IdHorario" DataTextField="HorarioDisplay" AutoPostBack="true" OnSelectedIndexChanged="ddlHorario_SelectedIndexChanged" />
                             <asp:RequiredFieldValidator runat="server" ControlToValidate="ddlHorario" InitialValue="0" CssClass="text-danger" ErrorMessage="Debe seleccionar un horario." />
                         </div>
+                        <div class="alert alert-secondary mt-3">
+                        <h5  class="alert-heading">Consultorio</h5>
+                        <asp:Label ID="lblConsultorio" runat="server" Text="Seleccione un horario." />
+                            </div>
 
                         <%-- Resumen de Monto --%>
                         <div class="alert alert-info mt-4">
