@@ -35,14 +35,20 @@
             <asp:BoundField DataField="NombreConsultorio" HeaderText="Consultorio" />
 
 
-      <asp:BoundField DataField="HoraInicio" HeaderText="Inicio" />
-<asp:BoundField DataField="HoraFin" HeaderText="Fin" />
+         <asp:BoundField DataField="HoraInicio" HeaderText="Inicio" />
+        <asp:BoundField DataField="HoraFin" HeaderText="Fin" />
 
-            <asp:ButtonField 
-                Text="Eliminar"
-                CommandName="Eliminar"
-                ButtonType="Button"
-                ControlStyle-CssClass="btn btn-danger btn-sm" />
+           <asp:TemplateField HeaderText="">
+            <ItemTemplate>
+                <asp:LinkButton 
+                    ID="btnEliminar"
+                    runat="server"
+                    Text="Eliminar"
+                    CssClass="btn btn-danger btn-sm"
+                    CommandName="Eliminar"
+                    CommandArgument='<%# Eval("IdHorario") %>' />
+            </ItemTemplate>
+        </asp:TemplateField>
 
         </Columns>
 

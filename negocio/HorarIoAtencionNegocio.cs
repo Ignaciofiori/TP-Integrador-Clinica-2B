@@ -11,19 +11,53 @@ namespace negocio
             List<HorarioAtencion> lista = new List<HorarioAtencion>();
             AccesoDatos datos = new AccesoDatos();
 
-            ProfesionalNegocio profesionalNeg = new ProfesionalNegocio();
-            EspecialidadNegocio especialidadNeg = new EspecialidadNegocio();
-            ConsultorioNegocio consultorioNeg = new ConsultorioNegocio();
-
             try
             {
                 datos.setearConsulta(@"
-                    SELECT id_horario, id_profesional, id_especialidad,
-       id_consultorio, dia_semana, hora_inicio, hora_fin, activo
-FROM HorarioAtencion
-WHERE activo = 1
+SELECT 
+    h.id_horario,
+    h.dia_semana,
+    h.hora_inicio,
+    h.hora_fin,
+    h.activo,
+
+    -- Profesional
+    p.id_profesional,
+    p.nombre AS prof_nombre,
+    p.apellido AS prof_apellido,
+    p.matricula AS prof_matricula,
+    p.telefono AS prof_telefono,
+    p.email AS prof_email,
+    p.activo AS prof_activo,
+
+    -- Especialidad
+    e.id_especialidad,
+    e.nombre AS esp_nombre,
+    e.descripcion AS esp_descripcion,
+
+    -- TABLA INTERMEDIA (valor consulta real)
+    pe.valor_consulta AS valor_consulta,
+
+    -- Consultorio
+    c.id_consultorio,
+    c.nombre AS cons_nombre,
+    c.direccion AS cons_direccion,
+    c.piso AS cons_piso,
+    c.numero_sala AS cons_sala
+
+FROM HorarioAtencion h
+INNER JOIN Profesional p ON p.id_profesional = h.id_profesional
+INNER JOIN Especialidad e ON e.id_especialidad = h.id_especialidad
+INNER JOIN Profesional_Especialidad pe ON 
+        pe.id_profesional = h.id_profesional
+    AND pe.id_especialidad = h.id_especialidad
+    AND pe.activo = 1
+INNER JOIN Consultorio c ON c.id_consultorio = h.id_consultorio
+
+WHERE h.activo = 1
+
 ORDER BY 
-    CASE dia_semana
+    CASE h.dia_semana
         WHEN 'Lunes' THEN 1
         WHEN 'Martes' THEN 2
         WHEN 'Miércoles' THEN 3
@@ -33,8 +67,7 @@ ORDER BY
         WHEN 'Domingo' THEN 7
         ELSE 8
     END,
-    hora_inicio;
-");
+    h.hora_inicio;");
 
                 datos.ejecutarLectura();
 
@@ -42,32 +75,43 @@ ORDER BY
                 {
                     HorarioAtencion aux = new HorarioAtencion();
 
-                    // ID
+                    // Horario base
                     aux.IdHorario = (int)datos.Lector["id_horario"];
+                    aux.DiaSemana = datos.Lector["dia_semana"].ToString();
+                    aux.HoraInicio = (TimeSpan)datos.Lector["hora_inicio"];
+                    aux.HoraFin = (TimeSpan)datos.Lector["hora_fin"];
+                    aux.Activo = (bool)datos.Lector["activo"];
 
-                    // Profesional
-                    aux.Profesional = profesionalNeg.BuscarPorId((int)datos.Lector["id_profesional"]);
+                    // PROFESIONAL COMPLETO
+                    aux.Profesional = new Profesional
+                    {
+                        IdProfesional = (int)datos.Lector["id_profesional"],
+                        Nombre = datos.Lector["prof_nombre"].ToString(),
+                        Apellido = datos.Lector["prof_apellido"].ToString(),
+                        Matricula = datos.Lector["prof_matricula"].ToString(),
+                        Telefono = datos.Lector["prof_telefono"].ToString(),
+                        Email = datos.Lector["prof_email"].ToString(),
+                        Activo = (bool)datos.Lector["prof_activo"]
+                    };
 
-                    // Especialidad (OBJETO)
-                    aux.Especialidad = especialidadNeg.BuscarPorId((int)datos.Lector["id_especialidad"]);
+                    // ESPECIALIDAD COMPLETA
+                    aux.Especialidad = new Especialidad
+                    {
+                        IdEspecialidad = (int)datos.Lector["id_especialidad"],
+                        Nombre = datos.Lector["esp_nombre"].ToString(),
+                        Descripcion = datos.Lector["esp_descripcion"].ToString(),
+                        ValorConsulta = (decimal)datos.Lector["valor_consulta"]
+                    };
 
-                    // Consultorio
-                    aux.Consultorio = consultorioNeg.BuscarPorId((int)datos.Lector["id_consultorio"]);
-
-                    // Día semana
-                    if (!(datos.Lector["dia_semana"] is DBNull))
-                        aux.DiaSemana = (string)datos.Lector["dia_semana"];
-
-                    // Horas
-                    if (!(datos.Lector["hora_inicio"] is DBNull))
-                        aux.HoraInicio = (TimeSpan)datos.Lector["hora_inicio"];
-
-                    if (!(datos.Lector["hora_fin"] is DBNull))
-                        aux.HoraFin = (TimeSpan)datos.Lector["hora_fin"];
-
-                    // Activo
-                    if (!(datos.Lector["activo"] is DBNull))
-                        aux.Activo = (bool)datos.Lector["activo"];
+                    // CONSULTORIO COMPLETO
+                    aux.Consultorio = new Consultorio
+                    {
+                        IdConsultorio = (int)datos.Lector["id_consultorio"],
+                        Nombre = datos.Lector["cons_nombre"].ToString(),
+                        Direccion = datos.Lector["cons_direccion"].ToString(),
+                        Piso = datos.Lector["cons_piso"].ToString(),
+                        NumeroSala = datos.Lector["cons_sala"].ToString()
+                    };
 
                     lista.Add(aux);
                 }
@@ -79,8 +123,6 @@ ORDER BY
                 datos.cerrarConexion();
             }
         }
-
-
 
         public List<HorarioAtencion> ListarPorProfesional(int idProfesional)
         {

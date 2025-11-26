@@ -67,7 +67,6 @@ namespace TP_Integrador_Clinica_WEB
 
         private void CargarTurnoParaEdicion(int idTurno)
         {
-            // 🛑 NOTA: Debes implementar BuscarPorId(idTurno) en TurnoNegocio o aquí.
             Turno turno = turnoNegocio.BuscarPorId(idTurno);
 
             if (turno != null)
@@ -119,7 +118,6 @@ namespace TP_Integrador_Clinica_WEB
         {
             if (ddlPaciente.SelectedValue != "0")
             {
-                // Muestra la Obra Social del paciente seleccionado
                 int idPaciente = int.Parse(ddlPaciente.SelectedValue);
                 Paciente paciente = pacienteNegocio.BuscarPorId(idPaciente);
 
@@ -138,15 +136,42 @@ namespace TP_Integrador_Clinica_WEB
             {
                 txtObraSocialNombre.Text = "";
                 hfIdObraSocial.Value = "0";
-                ddlProfesional.SelectedIndex = 0;
-                ddlProfesional.Enabled = false;
-                ddlHorario.SelectedIndex = 0;
-                ddlHorario.Enabled = false;
-                lblCosto.Text = "Seleccione un paciente, especialidad, profesional y horario.";
             }
 
-            // Reiniciar pasos dependientes
+            //  Si NO hay especialidad seleccionada todavía, solo limpio y me voy
+            if (ddlEspecialidad.SelectedValue == "0")
+            {
+                ddlProfesional.Items.Clear();
+                ddlProfesional.Items.Insert(0, new ListItem("-- Seleccione Profesional --", "0"));
+                ddlProfesional.Enabled = false;
+
+                ddlDiaSemana.Items.Clear();
+                ddlDiaSemana.Items.Insert(0, new ListItem("-- Seleccione Día --", "0"));
+
+                ddlFechaDisponible.Items.Clear();
+                ddlFechaDisponible.Items.Insert(0, new ListItem("-- Seleccione Fecha --", "0"));
+
+                ddlHorario.Items.Clear();
+                ddlHorario.Items.Insert(0, new ListItem("-- Seleccione Horario --", "0"));
+                ddlHorario.Enabled = false;
+                lblCosto.Text = "Seleccione un paciente, especialidad, profesional y horario.";
+                return;
+            }
+
+            // Si hay especialidad elegida, cargo profesionales
             CargarProfesionales(int.Parse(ddlEspecialidad.SelectedValue));
+
+            // Y limpio día/fecha/horarios
+            ddlDiaSemana.Items.Clear();
+            ddlDiaSemana.Items.Insert(0, new ListItem("-- Seleccione Día --", "0"));
+
+            ddlFechaDisponible.Items.Clear();
+            ddlFechaDisponible.Items.Insert(0, new ListItem("-- Seleccione Fecha --", "0"));
+
+            ddlHorario.Items.Clear();
+            ddlHorario.Items.Insert(0, new ListItem("-- Seleccione Horario --", "0"));
+            ddlHorario.Enabled = false;
+            lblCosto.Text = "Seleccione día y horario para calcular costo.";
         }
 
         protected void ddlEspecialidad_SelectedIndexChanged(object sender, EventArgs e)
@@ -164,7 +189,7 @@ namespace TP_Integrador_Clinica_WEB
 
             if (idEsp > 0)
             {
-                // 🛑 NOTA: Asumo que tienes ListarPorEspecialidad en ProfesionalNegocio
+                
                 ddlProfesional.DataSource = new ProfesionalNegocio().ListarPorEspecialidad(idEsp);
                 ddlProfesional.DataBind();
                 ddlProfesional.Items.Insert(0, new ListItem("-- Seleccione Profesional --", "0"));
@@ -177,21 +202,21 @@ namespace TP_Integrador_Clinica_WEB
             }
         }
 
-        
+
         /// para turnos
 
         private List<string> GenerarProximasFechas(string diaSemana)
         {
             var mapa = new Dictionary<string, DayOfWeek>()
-            {
-                {"Lunes", DayOfWeek.Monday},
-                {"Martes", DayOfWeek.Tuesday},
-                {"Miércoles", DayOfWeek.Wednesday},
-                {"Jueves", DayOfWeek.Thursday},
-                {"Viernes", DayOfWeek.Friday},
-                {"Sábado", DayOfWeek.Saturday},
-                {"Domingo", DayOfWeek.Sunday}
-            };
+    {
+        {"Lunes", DayOfWeek.Monday},
+        {"Martes", DayOfWeek.Tuesday},
+        {"Miércoles", DayOfWeek.Wednesday},
+        {"Jueves", DayOfWeek.Thursday},
+        {"Viernes", DayOfWeek.Friday},
+        {"Sábado", DayOfWeek.Saturday},
+        {"Domingo", DayOfWeek.Sunday}
+    };
 
             var fechas = new List<string>();
             DateTime hoy = DateTime.Today;
@@ -201,19 +226,16 @@ namespace TP_Integrador_Clinica_WEB
 
             DayOfWeek target = mapa[diaSemana];
 
+            // Primer día válido
+            int offset = ((int)target - (int)hoy.DayOfWeek + 7) % 7;
+            DateTime primerDia = hoy.AddDays(offset);
 
-            //// se puede modificar este numero para mas o menos dias mostrados
-            //// aca se ven los turnos en los proximos 21 dias
-            for (int i = 0; i < 21; i++) 
-            {
-                DateTime f = hoy.AddDays(i);
-                if (f.DayOfWeek == target)
-                    fechas.Add(f.ToString("yyyy-MM-dd"));
-            }
+            //  SIEMPRE 7 fechas
+            for (int i = 0; i < 7; i++)
+                fechas.Add(primerDia.AddDays(7 * i).ToString("yyyy-MM-dd"));
 
             return fechas;
         }
-
         protected void ddlDiaSemana_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ddlDiaSemana.SelectedIndex <= 0 || ddlProfesional.SelectedValue == "0")
@@ -355,10 +377,7 @@ namespace TP_Integrador_Clinica_WEB
             Turno turnoTemp = CrearTurnoTemporal(paciente);
             decimal montoFinal = turnoNegocio.DeterminarMonto(turnoTemp);
 
-            // 🛑 NOTA: Necesitas el precio base de la especialidad para mostrar el descuento.
-            // Asumo que el objeto Horario.Especialidad.PrecioBase está disponible o lo calculas.
-
-            // Por simplicidad, solo mostramos el monto final calculado por DeterminarMonto
+         
             lblCosto.Text = $"Monto Final a pagar por el paciente: **{montoFinal:C}**.";
         }
 
@@ -372,12 +391,9 @@ namespace TP_Integrador_Clinica_WEB
             Turno t = new Turno
             {
                 Paciente = paciente,
-                //Horario = horarioNegocio.BuscarPorId(int.Parse(ddlHorario.SelectedValue)), //linea muy larga
                 Horario = horario,
-                // La Obra Social se puede tomar del paciente o rellenar si es editable
                 ObraSocial = paciente.ObraSocial,
                 FechaTurno = DateTime.Parse(ddlFechaDisponible.SelectedValue),
-
                 HoraTurno = horario.HoraInicio
 
             };
@@ -402,10 +418,7 @@ namespace TP_Integrador_Clinica_WEB
 
                 if (!string.IsNullOrEmpty(hfIdTurno.Value))
                 {
-                    // Lógica de Modificación (no implementada completamente aquí)
                     t.IdTurno = int.Parse(hfIdTurno.Value);
-                    // 🛑 NOTA: Necesitas un método ModificarTurno en TurnoNegocio
-                    // turnoNegocio.ModificarTurno(t); 
                 }
                 else
                 {
