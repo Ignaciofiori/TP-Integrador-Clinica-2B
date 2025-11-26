@@ -1,6 +1,7 @@
 ﻿using modelo;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 
 namespace negocio
@@ -30,7 +31,7 @@ namespace negocio
                 t.hora_turno,
                 t.estado,
 
-                os.nombre AS obra_social_nombre,
+                ISNULL(os.nombre, 'Particular') AS obra_social_nombre,
 
                 (p.apellido + ', ' + p.nombre) AS paciente_nombre_completo,
 
@@ -111,7 +112,7 @@ namespace negocio
                 t.hora_turno,
                 t.estado,
 
-                os.nombre AS obra_social_nombre,
+                ISNULL(os.nombre, 'Particular') AS obra_social_nombre,
                 (p.apellido + ', ' + p.nombre) AS paciente_nombre_completo,
                 (prof.apellido + ', ' + prof.nombre) AS profesional_nombre_completo,
                 esp.nombre AS especialidad_nombre,
@@ -147,7 +148,7 @@ namespace negocio
                         break;
 
                     case "ObraSocial":
-                        query += " AND os.nombre LIKE @valor";
+                        query += " AND ISNULL(os.nombre, 'Particular') LIKE @valor";
                         break;
 
                     case "MontoMayor":
@@ -272,28 +273,17 @@ namespace negocio
             }
         }
 
-
-        public void Agregar(Factura f)
+        public bool ExisteFacturaParaTurno(int idTurno)
         {
             AccesoDatos datos = new AccesoDatos();
 
             try
             {
-                datos.setearConsulta(@"
-                    INSERT INTO Factura 
-                    (id_turno, monto_base, cobertura_aplicada, descuento_aplicado, monto_total, fecha_emision, activo)
-                    VALUES 
-                    (@turno, @base, @cob, @desc, @total, @fecha, 1)
-                ");
+                datos.setearConsulta("SELECT COUNT(*) FROM Factura WHERE id_turno = @id AND activo = 1");
+                datos.setearParametros("@id", idTurno);
 
-                datos.setearParametros("@turno", f.Turno.IdTurno);
-                datos.setearParametros("@base", f.MontoBase);
-                datos.setearParametros("@cob", f.CoberturaAplicada);
-                datos.setearParametros("@desc", f.DescuentoAplicado);
-                datos.setearParametros("@total", f.MontoTotal);
-                datos.setearParametros("@fecha", f.FechaEmision);
-
-                datos.ejecutarAccion();
+                int cantidad = (int)datos.ejecutarAccionScalar();
+                return cantidad > 0;
             }
             finally
             {
@@ -301,6 +291,58 @@ namespace negocio
             }
         }
 
+        public int GenerarFactura(int idTurno)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                // 1) Traer turno
+                Turno turno = turnoNeg.BuscarPorId(idTurno);
+                if (turno == null)
+                    throw new Exception("No se encontró el turno para facturar.");
+
+                if (turno.MontoTotal == null || turno.MontoTotal <= 0)
+                    throw new Exception("El turno no tiene un monto total asignado.");
+
+                // 2) Monto final YA está en el turno
+                decimal montoFinal = turno.MontoTotal.Value;
+
+                // 3) Cobertura aplicada (solo informativa)
+                decimal coberturaAplicada = (turno.ObraSocial != null)
+                    ? turno.ObraSocial.PorcentajeCobertura
+                    : 0;
+
+                // 4) No manejás descuentos aún → 0
+                decimal descuentoAplicado = 0;
+
+                // 5) Monto base = monto final antes de aplicar coberturas/descuentos
+                //    Si no tenés ese valor separado, lo igualamos
+                decimal montoBase = montoFinal;
+
+                // 6) Guardar factura
+                datos.setearConsulta(@"
+            INSERT INTO Factura
+                (id_turno, monto_base, cobertura_aplicada, descuento_aplicado, monto_total, fecha_emision, activo)
+            OUTPUT INSERTED.id_factura
+            VALUES
+                (@turno, @base, @cobertura, @descuento, @total, GETDATE(), 1)
+        ");
+
+                datos.setearParametros("@turno", idTurno);
+                datos.setearParametros("@base", montoBase);
+                datos.setearParametros("@cobertura", coberturaAplicada);
+                datos.setearParametros("@descuento", descuentoAplicado);
+                datos.setearParametros("@total", montoFinal);
+
+                int idFactura = datos.ejecutarAccionScalar();
+                return idFactura;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
 
         public void Modificar(Factura f)
         {
@@ -369,5 +411,119 @@ namespace negocio
                 datos.cerrarConexion();
             }
         }
+
+        public DataTable RecaudacionPorObraSocial()
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta(@"
+            SELECT 
+                obra_social,
+                SUM(monto_total) AS total_recaudado
+            FROM vw_Recaudacion
+            GROUP BY obra_social
+            ORDER BY total_recaudado DESC;
+        ");
+
+                datos.ejecutarLectura();
+
+                DataTable tabla = new DataTable();
+                tabla.Load(datos.Lector);
+
+                return tabla;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        public DataTable RecaudacionPorProfesional()
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta(@"
+            SELECT 
+                profesional,
+                SUM(monto_total) AS total_recaudado
+            FROM vw_Recaudacion
+            GROUP BY profesional
+            ORDER BY total_recaudado DESC;
+        ");
+
+                datos.ejecutarLectura();
+
+                DataTable tabla = new DataTable();
+                tabla.Load(datos.Lector);
+
+                return tabla;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        public DataTable RecaudacionPorEspecialidad()
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta(@"
+            SELECT 
+                especialidad,
+                SUM(monto_total) AS total_recaudado
+            FROM vw_Recaudacion
+            GROUP BY especialidad
+            ORDER BY total_recaudado DESC;
+        ");
+
+                datos.ejecutarLectura();
+
+                DataTable tabla = new DataTable();
+                tabla.Load(datos.Lector);
+
+                return tabla;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        public DataTable RecaudacionMensual()
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta(@"
+            SELECT 
+                anio_factura AS Año,
+                mes_factura AS Mes,
+                SUM(monto_total) AS total_mensual
+            FROM vw_Recaudacion
+            GROUP BY anio_factura, mes_factura
+            ORDER BY anio_factura DESC, mes_factura DESC;
+        ");
+
+                datos.ejecutarLectura();
+
+                DataTable tabla = new DataTable();
+                tabla.Load(datos.Lector);
+
+                return tabla;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
     }
 }

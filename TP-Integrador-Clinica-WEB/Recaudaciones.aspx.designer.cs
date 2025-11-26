@@ -11,61 +11,61 @@ namespace TP_Integrador_Clinica_WEB
 {
 
 
-    public partial class Facturacion
+    public partial class Recaudaciones
     {
 
         /// <summary>
-        /// ddlCampo control.
+        /// btnVolver control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlCampo;
+        protected global::System.Web.UI.WebControls.Button btnVolver;
 
         /// <summary>
-        /// txtFiltro control.
+        /// btnPorObra control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtFiltro;
+        protected global::System.Web.UI.WebControls.Button btnPorObra;
 
         /// <summary>
-        /// btnBuscar control.
+        /// btnPorProfesional control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnBuscar;
+        protected global::System.Web.UI.WebControls.Button btnPorProfesional;
 
         /// <summary>
-        /// btnLimpiar control.
+        /// btnPorEspecialidad control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnLimpiar;
+        protected global::System.Web.UI.WebControls.Button btnPorEspecialidad;
 
         /// <summary>
-        /// btnRecaudaciones control.
+        /// btnPorMes control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnRecaudaciones;
+        protected global::System.Web.UI.WebControls.Button btnPorMes;
 
         /// <summary>
-        /// gvFacturas control.
+        /// gvRecaudacion control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvFacturas;
+        protected global::System.Web.UI.WebControls.GridView gvRecaudacion;
     }
 }

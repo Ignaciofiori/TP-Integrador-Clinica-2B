@@ -12,6 +12,8 @@ public class Turno
     public string Estado { get; set; }
     public decimal? MontoTotal { get; set; }
     public bool Activo { get; set; }
+    public decimal MontoBase { get; set; }
+    public decimal DescuentoAplicado { get; set; }
     public string NombreObraSocialTurno
     {
         get

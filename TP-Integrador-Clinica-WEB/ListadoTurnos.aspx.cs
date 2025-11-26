@@ -50,7 +50,37 @@ namespace TP_Integrador_Clinica_WEB
             {
                 if (e.CommandName == "Asistir")
                 {
+                    // 1) Cambiar estado
                     turnoNegocio.CambiarEstado(idTurno, "Asistido");
+
+                    // 2) Generar factura automáticamente
+                    FacturaNegocio factNeg = new FacturaNegocio();
+
+                    // Opcional pero RECOMENDADO → NO duplicar facturas
+                    if (!factNeg.ExisteFacturaParaTurno(idTurno))
+                    {
+                        int idFactura = factNeg.GenerarFactura(idTurno);
+
+                        ScriptManager.RegisterStartupScript(
+                            this,
+                            GetType(),
+                            "alertFactura",
+                            $"alert('Factura #{idFactura} generada correctamente.');",
+                            true
+                        );
+                    }
+                    else
+                    {
+                        ScriptManager.RegisterStartupScript(
+                            this,
+                            GetType(),
+                            "alertFactura",
+                            $"alert('Este turno ya tiene una factura generada.');",
+                            true
+                        );
+                    }
+
+                    // 3) Refrescar grilla
                     CargarGrilla();
                 }
                 else if (e.CommandName == "Cancelar")

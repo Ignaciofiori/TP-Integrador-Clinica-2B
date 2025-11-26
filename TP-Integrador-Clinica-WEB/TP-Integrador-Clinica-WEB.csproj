@@ -133,6 +133,7 @@
     <Content Include="ListadoTurnos.aspx" />
     <Content Include="ProfesionalEspecialidades.aspx" />
     <Content Include="ProfesionalObrasSociales.aspx" />
+    <Content Include="Recaudaciones.aspx" />
     <Content Include="RegistrarHorario.aspx" />
     <Content Include="RegistrarTurno.aspx" />
     <Content Include="Scripts\bootstrap.bundle.js" />
@@ -307,6 +308,13 @@
       <DependentUpon>ProfesionalObrasSociales.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Recaudaciones.aspx.cs">
+      <DependentUpon>Recaudaciones.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Recaudaciones.aspx.designer.cs">
+      <DependentUpon>Recaudaciones.aspx</DependentUpon>
+    </Compile>
     <Compile Include="RegistrarHorario.aspx.cs">
       <DependentUpon>RegistrarHorario.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

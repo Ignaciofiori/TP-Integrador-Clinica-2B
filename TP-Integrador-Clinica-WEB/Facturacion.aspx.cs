@@ -19,6 +19,10 @@ namespace TP_Integrador_Clinica_WEB
             gvFacturas.DataSource = facturaNegocio.Listar();
             gvFacturas.DataBind();
         }
+        protected void btnRecaudaciones_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("Recaudaciones.aspx");
+        }
 
         protected void btnBuscar_Click(object sender, EventArgs e)
         {

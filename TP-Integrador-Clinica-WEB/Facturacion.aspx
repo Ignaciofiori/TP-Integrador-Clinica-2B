@@ -41,9 +41,15 @@
                     CssClass="btn btn-outline-secondary w-100"
                     OnClick="btnLimpiar_Click" />
             </div>
-        </div>
 
-        <hr />
+       <hr />
+        </div>
+                               <asp:Button 
+                       ID="btnRecaudaciones" 
+                       runat="server" 
+                       Text="Recaudaciones"
+                       CssClass="btn btn-info mb-3"
+                       OnClick="btnRecaudaciones_Click" />
 
         <asp:GridView ID="gvFacturas" runat="server"
             AutoGenerateColumns="false"

@@ -365,3 +365,46 @@ VALUES
 ------------------------------------------------------------
 -- FIN DEL SCRIPT
 ------------------------------------------------------------
+GO
+CREATE VIEW vw_Recaudacion
+AS
+SELECT 
+    f.id_factura,
+    f.monto_base,
+    f.cobertura_aplicada,
+    f.descuento_aplicado,
+    f.monto_total,
+    f.fecha_emision,
+
+    t.id_turno,
+    t.fecha_turno,
+    t.hora_turno,
+    t.estado AS estado_turno,
+
+    (p.apellido + ', ' + p.nombre) AS paciente,
+
+    ISNULL(os.nombre, 'Particular') AS obra_social,
+
+    (prof.apellido + ', ' + prof.nombre) AS profesional,
+
+    esp.nombre AS especialidad,
+
+    (cons.nombre + ' - Sala ' + cons.numero_sala) AS consultorio,
+
+    YEAR(f.fecha_emision) AS anio_factura,
+    MONTH(f.fecha_emision) AS mes_factura,
+    DAY(f.fecha_emision) AS dia_factura,
+
+    YEAR(t.fecha_turno) AS anio_turno,
+    MONTH(t.fecha_turno) AS mes_turno,
+    DAY(t.fecha_turno) AS dia_turno
+FROM Factura f
+    INNER JOIN Turno t ON t.id_turno = f.id_turno
+    INNER JOIN Paciente p ON p.id_paciente = t.id_paciente
+    LEFT JOIN ObraSocial os ON os.id_obra_social = t.id_obra_social
+    INNER JOIN HorarioAtencion h ON h.id_horario = t.id_horario
+    INNER JOIN Profesional prof ON prof.id_profesional = h.id_profesional
+    INNER JOIN Especialidad esp ON esp.id_especialidad = h.id_especialidad
+    INNER JOIN Consultorio cons ON cons.id_consultorio = h.id_consultorio
+WHERE f.activo = 1;
+GO
