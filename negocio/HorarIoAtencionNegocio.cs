@@ -127,6 +127,47 @@ ORDER BY
             }
         }
 
+        //  aca lista los dias que atiende un profesional
+        public List<string> ListarDiasQueAtiende(int idProfesional)
+        {
+            List<string> dias = new List<string>();
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta(@"
+                    SELECT dia_semana
+                    FROM (
+                        SELECT DISTINCT dia_semana
+                        FROM HorarioAtencion
+                        WHERE id_profesional = @id
+                    ) AS dias
+                    ORDER BY CASE dia_semana
+                        WHEN 'Lunes' THEN 1
+                        WHEN 'Martes' THEN 2
+                        WHEN 'Miércoles' THEN 3
+                        WHEN 'Jueves' THEN 4
+                        WHEN 'Viernes' THEN 5
+                        WHEN 'Sábado' THEN 6
+                        WHEN 'Domingo' THEN 7
+                    END;
+                    ");
+
+                datos.setearParametros("@id", idProfesional);
+                datos.ejecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    dias.Add(datos.Lector["dia_semana"].ToString());
+                }
+
+                return dias;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
 
 
         public HorarioAtencion BuscarPorId(int idHorario)

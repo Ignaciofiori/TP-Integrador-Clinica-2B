@@ -181,7 +181,7 @@ namespace negocio
                 datos.setearConsulta(@"
                     INSERT INTO Turno (id_paciente, id_horario, id_obra_social, 
                                        fecha_turno, hora_turno, estado, monto_total)
-                    VALUES (@pac, @hor, @obra, @fecha, @hora, @estado, NULL)
+                    VALUES (@pac, @hor, @obra, @fecha, @hora, @estado, @monto)
                 ");
 
                 datos.setearParametros("@pac", t.Paciente.IdPaciente);
@@ -193,6 +193,9 @@ namespace negocio
                 datos.setearParametros("@fecha", t.FechaTurno);
                 datos.setearParametros("@hora", t.HoraTurno);
                 datos.setearParametros("@estado", t.Estado);
+
+                datos.setearParametros("@monto", //para turnos
+                    t.MontoTotal.HasValue ? (object)t.MontoTotal.Value : DBNull.Value);
 
                 datos.ejecutarAccion();
             }

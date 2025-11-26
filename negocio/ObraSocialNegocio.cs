@@ -306,9 +306,9 @@ namespace negocio
             AccesoDatos datos = new AccesoDatos();
 
             datos.setearConsulta(@"
-        SELECT 1
-        FROM Profesional_ObraSocial
-        WHERE id_profesional = @prof AND id_obra_social = @obra AND activo = 1");
+            SELECT 1
+            FROM Profesional_ObraSocial
+            WHERE id_profesional = @prof AND id_obra_social = @obra AND convenio_activo = 1");
 
             datos.setearParametros("@prof", idProf);
             datos.setearParametros("@obra", idObra);

@@ -49,11 +49,32 @@
                             <asp:RequiredFieldValidator runat="server" ControlToValidate="ddlProfesional" InitialValue="0" CssClass="text-danger" ErrorMessage="Debe seleccionar un profesional." />
                         </div>
 
+                        <!-- selecciona dia de semana -->
                         <div class="mb-3">
-                            <label for="<%= txtFechaTurno.ClientID %>" class="form-label">Fecha del Turno:</label>
-                            <asp:TextBox ID="txtFechaTurno" runat="server" CssClass="form-control" TextMode="Date" AutoPostBack="true" OnTextChanged="txtFechaTurno_TextChanged" />
-                            <asp:RequiredFieldValidator runat="server" ControlToValidate="txtFechaTurno" CssClass="text-danger" ErrorMessage="Debe seleccionar una fecha." />
+                            <label class="form-label">Día disponible:</label>
+                            <asp:DropDownList 
+                                ID="ddlDiaSemana" 
+                                runat="server" 
+                                CssClass="form-control"
+                                AutoPostBack="true"
+                                OnSelectedIndexChanged="ddlDiaSemana_SelectedIndexChanged">
+                            </asp:DropDownList>
                         </div>
+
+                        <!--selecciona fecha disponible, configurado hasta 4 semanas -->
+                        <div class="mb-3">
+                            <label class="form-label">Fecha disponible:</label>
+                            <asp:DropDownList 
+                                ID="ddlFechaDisponible" 
+                                runat="server" 
+                                CssClass="form-control"
+                                AutoPostBack="true"
+                                OnSelectedIndexChanged="ddlFechaDisponible_SelectedIndexChanged">
+                            </asp:DropDownList>
+                        </div>
+
+
+
                     </fieldset>
 
                     <%-- *** SECCIÓN 3: SELECCIÓN DE HORA Y RESUMEN *** --%>
