@@ -183,6 +183,7 @@ ORDER BY
                         SELECT DISTINCT dia_semana
                         FROM HorarioAtencion
                         WHERE id_profesional = @id
+                            AND activo = 1
                     ) AS dias
                     ORDER BY CASE dia_semana
                         WHEN 'Lunes' THEN 1

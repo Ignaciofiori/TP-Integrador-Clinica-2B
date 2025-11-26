@@ -45,6 +45,7 @@
     <Compile Include="Descuento.cs" />
     <Compile Include="Especialidad.cs" />
     <Compile Include="Factura.cs" />
+    <Compile Include="FacturaListado.cs" />
     <Compile Include="HorarioAtencion.cs" />
     <Compile Include="ObraSocial.cs" />
     <Compile Include="Paciente.cs" />

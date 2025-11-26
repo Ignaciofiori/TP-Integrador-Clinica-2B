@@ -116,6 +116,7 @@
     <Content Include="Content\Site.css" />
     <Content Include="Default.aspx" />
     <Content Include="EditarValorConsulta.aspx" />
+    <Content Include="Facturacion.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="FormularioDescuento.aspx" />
     <Content Include="FormularioEspecialidad.aspx" />
@@ -217,6 +218,13 @@
     </Compile>
     <Compile Include="EditarValorConsulta.aspx.designer.cs">
       <DependentUpon>EditarValorConsulta.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Facturacion.aspx.cs">
+      <DependentUpon>Facturacion.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Facturacion.aspx.designer.cs">
+      <DependentUpon>Facturacion.aspx</DependentUpon>
     </Compile>
     <Compile Include="FormularioDescuento.aspx.cs">
       <DependentUpon>FormularioDescuento.aspx</DependentUpon>

@@ -27,8 +27,8 @@ namespace TP_Integrador_Clinica_WEB
         {
             if (e.CommandName == "Eliminar")
             {
-                int index = Convert.ToInt32(e.CommandArgument);
-                int id = Convert.ToInt32(gvHorarios.DataKeys[index].Value);
+                // Ahora CommandArgument es el ID real
+                int id = Convert.ToInt32(e.CommandArgument);
 
                 HorarioAtencionNegocio neg = new HorarioAtencionNegocio();
                 neg.Desactivar(id);
@@ -36,5 +36,6 @@ namespace TP_Integrador_Clinica_WEB
                 CargarHorarios();
             }
         }
+
     }
 }

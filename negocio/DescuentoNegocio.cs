@@ -282,7 +282,7 @@ namespace negocio
                 datos.setearParametros("@obra", idObraSocial);
                 datos.ejecutarLectura();
 
-                while (datos.Lector.Read())
+                while (datos.Lector.Read()) 
                 {
                     int min = (int)datos.Lector["edad_min"];
                     int max = (int)datos.Lector["edad_max"];
