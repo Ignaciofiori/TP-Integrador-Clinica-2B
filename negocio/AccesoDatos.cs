@@ -19,9 +19,9 @@ namespace negocio
 
         public AccesoDatos()
         {
-            connection = new SqlConnection("Server=localhost,1433;Database=clinica_db;User Id=sa;Password=BaseDeDatos#2;TrustServerCertificate=True;Integrated Security=False;");
+           // connection = new SqlConnection("Server=localhost,1433;Database=clinica_db;User Id=sa;Password=BaseDeDatos#2;TrustServerCertificate=True;Integrated Security=False;");
             //connection = new SqlConnection("Server=localhost;Database=clinica_db;Integrated Security=True;");
-           // connection = new SqlConnection("Server=DANA\\SQLEXPRESS;Database=clinica_db;Trusted_Connection=True;TrustServerCertificate=True;");
+            connection = new SqlConnection("Server=DANA\\SQLEXPRESS;Database=clinica_db;Trusted_Connection=True;TrustServerCertificate=True;");
             command = new SqlCommand();
         }
 

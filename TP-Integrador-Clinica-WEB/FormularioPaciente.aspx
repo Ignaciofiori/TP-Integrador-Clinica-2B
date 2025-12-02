@@ -41,7 +41,7 @@
 
                         <div class="mb-3">
                             <label>DNI</label>
-                            <asp:TextBox ID="txtDni" runat="server" CssClass="form-control" onkeypress="soloNumeros(event)" />
+                            <asp:TextBox ID="txtDni" runat="server" CssClass="form-control" />
                             <asp:RequiredFieldValidator 
                                 runat="server" 
                                 ControlToValidate="txtDNI"
