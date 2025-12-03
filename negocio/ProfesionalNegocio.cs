@@ -47,7 +47,7 @@ namespace negocio
 
                     if (!(datos.Lector["activo"] is DBNull))
                         aux.Activo = (bool)datos.Lector["activo"];
-
+                    
                     lista.Add(aux);
                 }
 

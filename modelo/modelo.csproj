@@ -53,7 +53,9 @@
     <Compile Include="Profesional_Especialidad.cs" />
     <Compile Include="Profesional_ObraSocial.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rol.cs" />
     <Compile Include="Turno.cs" />
+    <Compile Include="Usuario.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
