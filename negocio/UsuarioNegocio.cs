@@ -1,15 +1,16 @@
-﻿using System;
+﻿using modelo;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using modelo;
 
 namespace negocio
 {
-    internal class UsuarioNegocio
+    public class UsuarioNegocio
     {
         public Usuario Autenticar(string username, string password)
         {
@@ -22,14 +23,7 @@ namespace negocio
                 // Se busca el usuario por credenciales Y se hace JOIN con Rol y Usuario_Profesional
                 // para obtener toda la información de seguridad en una sola consulta.
                 
-                string consulta = "SELECT " +
-                                  "U.IdUsuario, U.Username, U.Nombre, U.Apellido, U.IdRol, U.Activo, " +
-                                  "R.nombre_rol, " +
-                                  "UP.id_profesional " +
-                                  "FROM Usuario U " +
-                                  "INNER JOIN Rol R ON U.id_rol = R.id_rol " +
-                                  "LEFT JOIN Usuario_Profesional UP ON U.IdUsuario = UP.id_usuario " + // LEFT JOIN: Si no es profesional (Admin), UP.id_profesional será NULL.
-                                  "WHERE U.Username = @username AND U.password = @password AND U.Activo = 1";
+                string consulta = "SELECT U.id_usuario, U.username, U.nombre, U.apellido, U.id_rol, U.activo, R.nombre_rol, UP.id_profesional FROM Usuario U INNER JOIN Rol R ON U.id_rol = R.id_rol LEFT JOIN Usuario_Profesional UP ON U.id_usuario = UP.id_usuario WHERE U.username = @username AND U.password = @password AND U.activo = 1; ";
 
                 datos.setearConsulta(consulta);
                 datos.setearParametros("@username", username);
