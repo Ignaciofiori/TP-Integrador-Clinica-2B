@@ -193,7 +193,6 @@ CREATE TABLE Descuento (
 GO
 
 
-GO
 CREATE VIEW vw_Recaudacion
 AS
 SELECT 
@@ -237,6 +236,105 @@ FROM Factura f
 WHERE f.activo = 1;
 GO
 
+------------------------------------------------------------
+-- TABLA ROL
+------------------------------------------------------------
+
+Create Table Rol(
+id_rol INT IDENTITY(1,1) PRIMARY KEY,
+nombre_rol VARCHAR(30) NOT NULL
+);
+GO
+------------------------------------------------------------
+-- TABLA USUARIO
+------------------------------------------------------------
+Create Table Usuario(
+id_usuario INT IDENTITY(1,1) PRIMARY KEY,
+username VARCHAR(100) NOT NULL UNIQUE,
+password VARCHAR(50) NOT NULL,
+nombre VARCHAR(30) NOT NULL,
+apellido VARCHAR(50) NOT NULL,
+id_rol INT NOT NULL,
+activo BIT DEFAULT 1,
+FOREIGN KEY (id_rol) REFERENCES Rol(id_rol)
+);
+GO
+------------------------------------------------------------
+-- TABLA PROFESIONAL
+------------------------------------------------------------
+Create Table Usuario_Profesional(
+id_usuario INT NOT NULL UNIQUE,
+id_profesional INT NOT NULL UNIQUE,
+CONSTRAINT PK_UsuarioProfesional PRIMARY KEY (id_usuario, id_profesional),
+FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario),
+FOREIGN KEY (id_profesional) REFERENCES Profesional(id_profesional)
+);
+GO
+
+Alter Table Turno
+Add nota_profesional VARCHAR(MAX) NULL
+GO
+
+---------------------------------------------------------
+--INSERTS--
+-----------------------------------------------------------
+--Nuevo--
+
+INSERT INTO Rol (nombre_rol)
+VALUES ('Administrador'), ('Profesional');
+
+INSERT INTO Usuario (username, password, nombre, apellido, id_rol)
+VALUES
+('admin1', 'admin123', 'Laura', 'Gomez', 1),
+('admin2', 'admin123', 'Jorge', 'Paredes', 1),
+('admin3', 'admin123', 'Marina', 'Sosa', 1);
+
+INSERT INTO Usuario (username, password, nombre, apellido, id_rol)
+VALUES
+('pablof', 'clave123', 'Pablo', 'Fernández', 2),
+('sofiam', 'clave123', 'Sofía', 'Martínez', 2),
+('lucasp', 'clave123', 'Lucas', 'Pereyra', 2),
+('caros', 'clave123', 'Carolina', 'Suárez', 2),
+('martind', 'clave123', 'Martín', 'Delgado', 2),
+('veroi', 'clave123', 'Verónica', 'Iglesias', 2),
+('julianm', 'clave123', 'Julián', 'Moreno', 2),
+('ivanas', 'clave123', 'Ivana', 'Soria', 2),
+('ramirog', 'clave123', 'Ramiro', 'Gauna', 2),
+('elenap', 'clave123', 'Elena', 'Paz', 2),
+('adrianq', 'clave123', 'Adrián', 'Quiroga', 2),
+('martao', 'clave123', 'Marta', 'Ojeda', 2),
+('danielb', 'clave123', 'Daniel', 'Barrios', 2),
+('claudiar', 'clave123', 'Claudia', 'Rojas', 2),
+('estebanl', 'clave123', 'Esteban', 'López', 2),
+('nadiag', 'clave123', 'Nadia', 'Giménez', 2),
+('tobiasv', 'clave123', 'Tobías', 'Varela', 2),
+('flors', 'clave123', 'Florencia', 'Sánchez', 2),
+('mauricioh', 'clave123', 'Mauricio', 'Herrera', 2),
+('rocion', 'clave123', 'Rocío', 'Núñez', 2);
+
+INSERT INTO Usuario_Profesional (id_usuario, id_profesional)
+VALUES
+(4, 1),
+(5, 2),
+(6, 3),
+(7, 4),
+(8, 5),
+(9, 6),
+(10, 7),
+(11, 8),
+(12, 9),
+(13, 10),
+(14, 11),
+(15, 12),
+(16, 13),
+(17, 14),
+(18, 15),
+(19, 16),
+(20, 17),
+(21, 18),
+(22, 19),
+(23, 20);
+--Nuevo--
 
 INSERT INTO ObraSocial (nombre, porcentaje_cobertura, telefono, direccion, activo)
 VALUES
@@ -451,3 +549,5 @@ SELECT
     1
 FROM Turno
 WHERE estado IN ('asistido','confirmado') AND monto_total IS NOT NULL;
+
+
