@@ -132,6 +132,7 @@
     <Content Include="ListadoProfesionales.aspx" />
     <Content Include="ListadoTurnos.aspx" />
     <Content Include="Login.aspx" />
+    <Content Include="PanelProfesional.aspx" />
     <Content Include="ProfesionalEspecialidades.aspx" />
     <Content Include="ProfesionalObrasSociales.aspx" />
     <Content Include="Recaudaciones.aspx" />
@@ -300,6 +301,13 @@
     </Compile>
     <Compile Include="Login.aspx.designer.cs">
       <DependentUpon>Login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="PanelProfesional.aspx.cs">
+      <DependentUpon>PanelProfesional.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="PanelProfesional.aspx.designer.cs">
+      <DependentUpon>PanelProfesional.aspx</DependentUpon>
     </Compile>
     <Compile Include="ProfesionalEspecialidades.aspx.cs">
       <DependentUpon>ProfesionalEspecialidades.aspx</DependentUpon>
